@@ -1,7 +1,12 @@
 #include <Arduino.h>
+#define motor1_pin 3
+
+
 
 void setup() {
-  // put your setup code here, to run once:
+  pinMode(motor1_pin, OUTPUT);
+  analogWrite(motor1_pin, 254);
+
 }
 
 void loop() {
