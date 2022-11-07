@@ -22,8 +22,7 @@ Adafruit_MPU6050 mpu;
 int gyro_update_loop_timer = 0;
 int gyro_PID_loop_timer = 0;
 float gyro_degrees = 0.00;
-int capture = 0;
-int capture2 = 0;
+
 float find_mean = 0.00;
 float find_mean_counter = 0.00;
 /*
@@ -88,9 +87,11 @@ void setup() {
   }
   mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
   mpu.setGyroRange(MPU6050_RANGE_250_DEG);
-  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+  mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
   //Serial.println("");
   delay(100);
+  gyro_update_loop_timer = millis();
+  gyro_PID_loop_timer = millis();
 
   /*
   Wire.begin();
@@ -129,14 +130,14 @@ void loop() {
 
   //UPDATE_GYRO_VALUES
   current_time = millis();
-  if(current_time - gyro_update_loop_timer > 10){ //100Khz
+  if(current_time - gyro_update_loop_timer > .000000000000001){ //100hz
       update_Gyro_values(); 
       gyro_update_loop_timer = current_time;
     }
 
   //GYRO_PID_LOOP
   current_time = millis();
-  if(current_time - gyro_PID_loop_timer > 20){ //50Khz
+  if(current_time - gyro_PID_loop_timer > 20){ //50hz
     gyro_PID_loop();
     gyro_PID_loop_timer = current_time;
   }
@@ -166,7 +167,7 @@ void loop() {
   Serial.print(" | gY = "); Serial.print(convert_int16_to_str(gyro_y));
   Serial.print(" | gZ = "); Serial.print(convert_int16_to_str(gyro_z));
   Serial.println();
-  */
+*/
 
 
 
@@ -194,40 +195,40 @@ void loop() {
 
 
 void update_Gyro_values(){
-  capture = millis();
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
-  /*
-  Serial.print("Temperature:");
-  Serial.print(temp.temperature);
-  Serial.print("\tx-acceleration:");
-  Serial.print(a.acceleration.x);
-  Serial.print("\ty-acceleration:");
-  Serial.print(a.acceleration.y);
-  Serial.print("\tz-acceleration:");
-  Serial.print(a.acceleration.z);
-  Serial.print("\tx-gyro:");
-  Serial.print(g.gyro.x);
-  Serial.print("\ty-gyro:");
-  Serial.print(g.gyro.y);
+  
+  //Serial.print("Temperature:");
+  //Serial.print(temp.temperature);
+  //Serial.print("x-acceleration:");
+  //Serial.print(a.acceleration.x);
+  //Serial.print("\ty-acceleration:");
+  //Serial.print(a.acceleration.y);
+  //Serial.print("\tz-acceleration:");
+  //Serial.print(a.acceleration.z);
+  //Serial.print("\tx-gyro:");
+  //Serial.print(g.gyro.x);
+  //Serial.print("\ty-gyro:");
+  //Serial.print(g.gyro.y);
   Serial.print("\tz-gyro:");
   Serial.print(g.gyro.z,6);
-  */
+  
 
   //////////////////////////////
   //This CODE IS TO ONLY FIND THE STANDING ERROR OF GYRO
   find_mean += g.gyro.z;
   find_mean_counter+= 1.00;
-  float standing_gyro_mean = find_mean/find_mean_counter;// 0.005418 is a good number
+  float standing_gyro_mean = find_mean/find_mean_counter;// 0.005418 is a good number 0.005863 0.005873 0.005894 0.005581
+  Serial.print("  \tstanding_gyro_mean:");
   Serial.print(standing_gyro_mean, 6);
   /////////////////////////
 
 
-  gyro_degrees += ((float)capture - (float)gyro_update_loop_timer) / 1000.00 * (g.gyro.z-0.005418) * 180.00/PI;
+  gyro_degrees += ((float)current_time - (float)gyro_update_loop_timer) / 1000.00 * (g.gyro.z-0.005581) * 180.00/PI;
   Serial.print("  \tgyro degrees:");
   Serial.println(gyro_degrees);
 
-  capture2 = millis();
+ 
 }
 
 
@@ -243,3 +244,6 @@ void gyro_PID_loop(){
 
 
 }
+
+
+
