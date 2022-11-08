@@ -1,20 +1,10 @@
-#include <Servo.h>
-#include <Arduino.h>
-#include <Wire.h>
-#include "MPU6050.h"
-#include "I2Cdev.h"
-#include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
+#include "definitions.hpp"
 
-#define motor1_pin 3
+
 #define motor1_pin_servo_lib 3
-
-Servo myservo; // Create Servo object to control the servo
-
-
-//FUNCTION declarations
-void gyro_PID_loop();
-void update_Gyro_values();
+#define motor2_pin_servo_lib 5
+#define motor3_pin_servo_lib 6
+#define motor4_pin_servo_lib 9
 
 
 //GYRO PID LOOP VARIABLES
@@ -22,33 +12,33 @@ Adafruit_MPU6050 mpu;
 int gyro_update_loop_timer = 0;
 int gyro_PID_loop_timer = 0;
 float gyro_degrees = 0.00;
-
 float find_mean = 0.00;
 float find_mean_counter = 0.00;
-/*
-const int MPU_ADDR = 0x68; // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
-int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
-int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
-int16_t temperature; // variables for temperature data
-char tmp_str[7]; // temporary variable used in convert function
-unsigned long gyro_prev_time = 0;
-unsigned long gyro_current_time = 0;
-float gyro_degrees = 0.00;
 
-char* convert_int16_to_str(int16_t i) { // converts int16 to string. Moreover, resulting strings will have the same length in the debug monitor.
-  sprintf(tmp_str, "%6d", i);
-  return tmp_str;
-}
-*/
-
+float gyro_degrees = 0.00; // extern                                      //FOR GYRO PID control
+float gyro_PID_error = 0.00; // extern
+float gyro_PID_error_prev = 0.00; // extern
+float gyro_PID_P = 0.00; // extern
+float gyro_PID_I = 0.00; // extern
+float gyro_PID_D = 0.00; // extern
+float gyro_KP_divider = 1.00; // extern
+float gyro_PID_KP = 1.00/gyro_KP_divider; // extern
+float gyro_PID_KI = 0.00; // extern
+float gyro_PID_KD = 6.00; // extern
+float gyro_PID_out = 0.00; // extern
+bool gyro_foward_flag = true; // extern
 
 
 //MOTOR Variables
+Servo myservo1; // Create Servo object to control the servo
+Servo myservo2;
+Servo myservo3;
+Servo myservo4;
 int current_time = 0;
 int p_in = 255/2;
-int micro_p_in_test = 1.5 * 1000;
-
-
+int micros_p_in = 1.5 * 1000;
+int micro_p_in_max = 1.5 * 1000; // to move wheel forward
+int micro_p_in_min = 1.5 * 1000; // to move wheel backward
 
 
 //Logic variables
@@ -62,23 +52,21 @@ int end_flag = 0; // low is to end on our side, high is to end on their side
 
 
 
-
-
-
 void setup() {
-  //pinMode(motor1_pin, OUTPUT);
-  //analogWrite(motor1_pin, p_in);
+  //pinMode(motor1_pin_servo_lib, OUTPUT);
+  //analogWrite(motor1_pin_servo_lib, p_in);
   
   Serial.begin(9600);
 
   //Servo set up
-  myservo.attach(motor1_pin_servo_lib); 
-  myservo.writeMicroseconds(micro_p_in_test);
+  myservo1.attach(motor1_pin_servo_lib); 
+  myservo1.writeMicroseconds(micros_p_in);
 
 
 
   //GYRO setup
   // Try to initialize!
+  /*
   if (!mpu.begin()) {
     Serial.println("Failed to find MPU6050 chip");
     while (1) {
@@ -87,19 +75,13 @@ void setup() {
   }
   mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
   mpu.setGyroRange(MPU6050_RANGE_250_DEG);
-  mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
+  mpu.setFilterBandwidth(MPU6050_BAND_10_HZ); //maybe 21 instead of 10
   //Serial.println("");
   delay(100);
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
-
-  /*
-  Wire.begin();
-  Wire.beginTransmission(MPU_ADDR); // Begins a transmission to the I2C slave (GY-521 board)
-  Wire.write(0x6B); // PWR_MGMT_1 register
-  Wire.write(0); // set to zero (wakes up the MPU-6050)
-  Wire.endTransmission(true);
   */
+
 }
 
 
@@ -115,19 +97,21 @@ void setup() {
 void loop() {
   // Use Serial to test inputs to motors and speeds/calibrate motors
   if(Serial.available()){
-    if(Serial.read() == '1'){
+    char incomingCharacter = Serial.read();
+    if(incomingCharacter == '1'){
       p_in++;
-      micro_p_in_test++;
+      micros_p_in++;
     }else{
       p_in--;
-      micro_p_in_test--;
+      micros_p_in--;
     }
 
     Serial.print(p_in);  
     Serial.print("  ");
-    Serial.print(micro_p_in_test);
+    Serial.println(micros_p_in);
   }		
 
+  /*
   //UPDATE_GYRO_VALUES
   current_time = millis();
   if(current_time - gyro_update_loop_timer > .000000000000001){ //100hz
@@ -141,6 +125,7 @@ void loop() {
     gyro_PID_loop();
     gyro_PID_loop_timer = current_time;
   }
+  */
 
   /*
   Wire.beginTransmission(MPU_ADDR);
@@ -176,12 +161,8 @@ void loop() {
 
 
 
-
-
-
-
-
-  myservo.writeMicroseconds(micro_p_in_test);
+  //analogWrite(motor1_pin_servo_lib, p_in);
+  myservo1.writeMicroseconds(micros_p_in);
   
   
   
@@ -191,59 +172,6 @@ void loop() {
 
 
 
-
-
-
-void update_Gyro_values(){
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  
-  //Serial.print("Temperature:");
-  //Serial.print(temp.temperature);
-  //Serial.print("x-acceleration:");
-  //Serial.print(a.acceleration.x);
-  //Serial.print("\ty-acceleration:");
-  //Serial.print(a.acceleration.y);
-  //Serial.print("\tz-acceleration:");
-  //Serial.print(a.acceleration.z);
-  //Serial.print("\tx-gyro:");
-  //Serial.print(g.gyro.x);
-  //Serial.print("\ty-gyro:");
-  //Serial.print(g.gyro.y);
-  Serial.print("\tz-gyro:");
-  Serial.print(g.gyro.z,6);
-  
-
-  //////////////////////////////
-  //This CODE IS TO ONLY FIND THE STANDING ERROR OF GYRO
-  find_mean += g.gyro.z;
-  find_mean_counter+= 1.00;
-  float standing_gyro_mean = find_mean/find_mean_counter;// 0.005418 is a good number 0.005863 0.005873 0.005894 0.005581
-  Serial.print("  \tstanding_gyro_mean:");
-  Serial.print(standing_gyro_mean, 6);
-  /////////////////////////
-
-
-  gyro_degrees += ((float)current_time - (float)gyro_update_loop_timer) / 1000.00 * (g.gyro.z-0.005581) * 180.00/PI;
-  Serial.print("  \tgyro degrees:");
-  Serial.println(gyro_degrees);
-
- 
-}
-
-
-
-
-
-
-
-
-
-
-void gyro_PID_loop(){
-
-
-}
 
 
 
