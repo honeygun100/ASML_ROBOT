@@ -1,7 +1,7 @@
 #include "definitions.hpp"
 
 
-void update_Gyro_values(){
+void MPU_6050_update_Gyro_values(){
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
 
@@ -25,20 +25,84 @@ void update_Gyro_values(){
     //This CODE IS TO ONLY FIND THE STANDING ERROR OF GYRO
     find_mean += g.gyro.z;
     find_mean_counter+= 1.00;
-    float standing_gyro_mean = find_mean/find_mean_counter;// 0.005418 is a good number 0.005863 0.005873 0.005894 0.005581
+    float standing_gyro_mean = find_mean/find_mean_counter;// 0.005418 is a good number 0.013898
     Serial.print("  \tstanding_gyro_mean:");
     Serial.print(standing_gyro_mean, 6);
     /////////////////////////
 
 
-    gyro_degrees += ((float)current_time - (float)gyro_update_loop_timer) / 1000.00 * (g.gyro.z-0.005581) * 180.00/PI;
+    gyro_degrees += ((float)current_time - (float)gyro_update_loop_timer) / 1000.00 * (g.gyro.z-0.013898) * 180.00/PI;
     Serial.print("  \tgyro degrees:");
     Serial.println(gyro_degrees);
 }
 
 
 
+void BNO005_update_Gyro_values(){
 
+    sensors_event_t event; 
+    bno.getEvent(&event);
+
+    /*
+    // Display the floating point data  CIRCLES BACK TO 360
+    Serial.print("X: ");
+    Serial.print(event.orientation.x, 4);
+    Serial.print("\tY: ");
+    Serial.print(event.orientation.y, 4);
+    Serial.print("\tZ: ");
+    Serial.print(event.orientation.z, 4);
+    Serial.println("");
+    */
+    delay(100);
+
+    imu::Quaternion quat = bno.getQuat();
+    
+    //Display the quat data
+    Serial.print("qW: ");
+    Serial.print(quat.w(), 4);
+    Serial.print(" qX: ");
+    Serial.print(quat.y(), 4);
+    Serial.print(" qY: ");
+    Serial.print(quat.x(), 4);
+    Serial.print(" qZ: ");
+    Serial.print(quat.z(), 4);
+    Serial.println("");
+    
+    gyro_degrees = quat.z();
+
+    imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE); // VECTOR_EULER   CIRCLES BACK TO 360
+    /*
+    //Display the floating point data 
+    Serial.print("X: ");
+    Serial.print(euler.x());
+    Serial.print(" Y: ");
+    Serial.print(euler.y());
+    Serial.print(" Z: ");
+    Serial.print(euler.z());
+    Serial.print("");
+    */
+
+    /*
+    //////////////////////////////
+    //This CODE IS TO ONLY FIND THE STANDING ERROR OF GYRO
+    float sample = euler.z();
+    find_mean += sample;
+    find_mean_counter+= 1.00;
+    float standing_gyro_mean = find_mean/find_mean_counter;// 0.005418 is a good number 0.013898
+    Serial.print("  \tstanding_gyro_mean:");
+    Serial.print(standing_gyro_mean, 6);
+    /////////////////////////
+
+
+    gyro_degrees += ((float)(current_time - gyro_update_loop_timer)) / 1000.00 * ((float)(sample)) * 180.00/((float)PI);
+    Serial.print("  \tgyro degrees:");
+    Serial.println(gyro_degrees);
+
+
+    gyro_update_loop_timer = current_time;
+    */
+
+}
 
 
 void gyro_PID_loop(){
@@ -67,22 +131,22 @@ void gyro_PID_loop(){
 
     if(gyro_foward_flag == true){
         if(gyro_PID_out >= 0){
-            twinky_one_speed = twinky_max + gyro_PID_out/2;
-            twinky_two_speed = twinky_max - gyro_PID_out/2;
+            //twinky_one_speed = twinky_max + gyro_PID_out/2;
+            //twinky_two_speed = twinky_max - gyro_PID_out/2;
 
         }else{
-            twinky_one_speed = twinky_max - (-1.00 * gyro_PID_out)/2; 
-            twinky_two_speed = twinky_max + (-1.00 * gyro_PID_out)/2; 
+            //twinky_one_speed = twinky_max - (-1.00 * gyro_PID_out)/2; 
+            //twinky_two_speed = twinky_max + (-1.00 * gyro_PID_out)/2; 
             
         }
     }else{
         if(gyro_PID_out >= 0){
-            twinky_one_speed = -1.00*(twinky_max - gyro_PID_out/2); 
-            twinky_two_speed = -1.00*(twinky_max + gyro_PID_out/2); 
+            //twinky_one_speed = -1.00*(twinky_max - gyro_PID_out/2); 
+            //twinky_two_speed = -1.00*(twinky_max + gyro_PID_out/2); 
 
         }else{
-            twinky_one_speed = -1.00*(twinky_max + (-1.00*gyro_PID_out)/2);
-            twinky_two_speed = -1.00*(twinky_max - (-1.00*gyro_PID_out)/2);
+            //twinky_one_speed = -1.00*(twinky_max + (-1.00*gyro_PID_out)/2);
+            //twinky_two_speed = -1.00*(twinky_max - (-1.00*gyro_PID_out)/2);
 
         }
     }

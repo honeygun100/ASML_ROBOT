@@ -8,17 +8,19 @@
 #include "I2Cdev.h"
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
-
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
 
 //FUNCTION declarations
 void gyro_PID_loop();
-void update_Gyro_values();
-
+void MPU_6050_update_Gyro_values();
+void BNO005_update_Gyro_values();
 
 //GYRO PID LOOP VARIABLES
+extern Adafruit_BNO055 bno;
 extern Adafruit_MPU6050 mpu;
-extern int gyro_update_loop_timer;
-extern int gyro_PID_loop_timer;
+extern unsigned long gyro_update_loop_timer;
+extern unsigned long gyro_PID_loop_timer;
 extern float gyro_degrees;
 extern float find_mean;
 extern float find_mean_counter;
@@ -42,7 +44,7 @@ extern Servo myservo1; // Create Servo object to control the servo
 extern Servo myservo2;
 extern Servo myservo3;
 extern Servo myservo4;
-extern int current_time;
+extern unsigned long current_time;
 extern int p_in;
 extern int micros_p_in;
 

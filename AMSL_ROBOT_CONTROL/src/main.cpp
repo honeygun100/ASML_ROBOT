@@ -8,14 +8,14 @@
 
 
 //GYRO PID LOOP VARIABLES
+Adafruit_BNO055 bno = Adafruit_BNO055(55);
 Adafruit_MPU6050 mpu;
-int gyro_update_loop_timer = 0;
-int gyro_PID_loop_timer = 0;
-float gyro_degrees = 0.00;
+unsigned long gyro_update_loop_timer = 0;
+unsigned long gyro_PID_loop_timer = 0;
 float find_mean = 0.00;
 float find_mean_counter = 0.00;
 
-float gyro_degrees = 0.00; // extern                                      //FOR GYRO PID control
+float gyro_degrees = 0.00; // extern                                     
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
 float gyro_PID_P = 0.00; // extern
@@ -34,7 +34,7 @@ Servo myservo1; // Create Servo object to control the servo
 Servo myservo2;
 Servo myservo3;
 Servo myservo4;
-int current_time = 0;
+unsigned long current_time = 0;
 int p_in = 255/2;
 int micros_p_in = 1.5 * 1000;
 int micro_p_in_max = 1.5 * 1000; // to move wheel forward
@@ -55,7 +55,7 @@ int end_flag = 0; // low is to end on our side, high is to end on their side
 void setup() {
   //pinMode(motor1_pin_servo_lib, OUTPUT);
   //analogWrite(motor1_pin_servo_lib, p_in);
-  
+
   Serial.begin(9600);
 
   //Servo set up
@@ -65,12 +65,12 @@ void setup() {
 
 
   //GYRO setup
-  // Try to initialize!
+  // Try to initialize MPU_6050!
   /*
   if (!mpu.begin()) {
     Serial.println("Failed to find MPU6050 chip");
     while (1) {
-      delay(10);
+    delay(10);
     }
   }
   mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
@@ -78,10 +78,23 @@ void setup() {
   mpu.setFilterBandwidth(MPU6050_BAND_10_HZ); //maybe 21 instead of 10
   //Serial.println("");
   delay(100);
-  gyro_update_loop_timer = millis();
-  gyro_PID_loop_timer = millis();
   */
 
+  // Try to initialize BNO005!
+  if(!bno.begin()){
+    /* There was a problem detecting the BNO055 ... check your connections */
+    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+    while(1);
+  }
+  delay(1000);
+  bno.setExtCrystalUse(true);
+  
+
+
+
+
+  gyro_update_loop_timer = millis();
+  gyro_PID_loop_timer = millis();
 }
 
 
@@ -111,21 +124,33 @@ void loop() {
     Serial.println(micros_p_in);
   }		
 
-  /*
+  
   //UPDATE_GYRO_VALUES
+  /*
   current_time = millis();
   if(current_time - gyro_update_loop_timer > .000000000000001){ //100hz
-      update_Gyro_values(); 
+      MPU_6050_update_Gyro_values(); 
       gyro_update_loop_timer = current_time;
     }
+  */
+
+  
+  /*
+  current_time = millis();
+  if(current_time - gyro_update_loop_timer > 1000){ //100hz
+    BNO005_update_Gyro_values(); 
+    gyro_update_loop_timer = current_time;
+  }*/
+  current_time = millis();
+  BNO005_update_Gyro_values(); 
+  
 
   //GYRO_PID_LOOP
-  current_time = millis();
   if(current_time - gyro_PID_loop_timer > 20){ //50hz
     gyro_PID_loop();
     gyro_PID_loop_timer = current_time;
   }
-  */
+  
 
   /*
   Wire.beginTransmission(MPU_ADDR);
@@ -162,7 +187,7 @@ void loop() {
 
 
   //analogWrite(motor1_pin_servo_lib, p_in);
-  myservo1.writeMicroseconds(micros_p_in);
+  //myservo1.writeMicroseconds(micros_p_in);
   
   
   
