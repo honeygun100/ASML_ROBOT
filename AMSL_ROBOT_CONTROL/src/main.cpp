@@ -7,6 +7,8 @@
 #define motor4_pin_servo_lib 9
 
 
+
+
 //GYRO PID LOOP VARIABLES
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 Adafruit_MPU6050 mpu;
@@ -43,10 +45,7 @@ int micro_p_in_min = 1.5 * 1000; // to move wheel backward
 
 //Logic variables
 int end_flag = 0; // low is to end on our side, high is to end on their side
-
-
-
-
+Direciton current_direction;
 
 
 
@@ -59,9 +58,18 @@ void setup() {
   Serial.begin(9600);
 
   //Servo set up
-  myservo1.attach(motor1_pin_servo_lib); 
+  myservo1.attach(motor1_pin_servo_lib);
+  myservo2.attach(motor2_pin_servo_lib);
+  myservo3.attach(motor3_pin_servo_lib);
+  myservo4.attach(motor4_pin_servo_lib);
   myservo1.writeMicroseconds(micros_p_in);
-
+  myservo2.writeMicroseconds(micros_p_in);
+  myservo3.writeMicroseconds(micros_p_in);
+  myservo4.writeMicroseconds(micros_p_in);
+  
+  
+  
+  
 
 
   //GYRO setup
@@ -80,9 +88,11 @@ void setup() {
   delay(100);
   */
 
+
+  
   // Try to initialize BNO005!
   if(!bno.begin()){
-    /* There was a problem detecting the BNO055 ... check your connections */
+    // There was a problem detecting the BNO055 ... check your connections 
     Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
     while(1);
   }
@@ -95,6 +105,10 @@ void setup() {
 
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
+
+
+
+  current_direction = forward;
 }
 
 
@@ -114,12 +128,12 @@ void loop() {
     if(incomingCharacter == '1'){
       p_in++;
       micros_p_in++;
-    }else{
+    }else if(incomingCharacter == '2'){
       p_in--;
       micros_p_in--;
     }
 
-    Serial.print(p_in);  
+    Serial.print(p_in);
     Serial.print("  ");
     Serial.println(micros_p_in);
   }		
@@ -140,44 +154,19 @@ void loop() {
   if(current_time - gyro_update_loop_timer > 1000){ //100hz
     BNO005_update_Gyro_values(); 
     gyro_update_loop_timer = current_time;
-  }*/
+  }
+  */
+
   current_time = millis();
   BNO005_update_Gyro_values(); 
-  
+  //MPU_6050_update_Gyro_values();
 
   //GYRO_PID_LOOP
   if(current_time - gyro_PID_loop_timer > 20){ //50hz
     gyro_PID_loop();
     gyro_PID_loop_timer = current_time;
   }
-  
-
-  /*
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x3B); // starting with register 0x3B (ACCEL_XOUT_H) [MPU-6000 and MPU-6050 Register Map and Descriptions Revision 4.2, p.40]
-  Wire.endTransmission(false); // the parameter indicates that the Arduino will send a restart. As a result, the connection is kept active.
-  Wire.requestFrom(MPU_ADDR, 7*2, true); // request a total of 7*2=14 registers
-  
-  // "Wire.read()<<8 | Wire.read();" means two registers are read and stored in the same variable
-  accelerometer_x = Wire.read()<<8 | Wire.read(); // reading registers: 0x3B (ACCEL_XOUT_H) and 0x3C (ACCEL_XOUT_L)
-  accelerometer_y = Wire.read()<<8 | Wire.read(); // reading registers: 0x3D (ACCEL_YOUT_H) and 0x3E (ACCEL_YOUT_L)
-  accelerometer_z = Wire.read()<<8 | Wire.read(); // reading registers: 0x3F (ACCEL_ZOUT_H) and 0x40 (ACCEL_ZOUT_L)
-  temperature = Wire.read()<<8 | Wire.read(); // reading registers: 0x41 (TEMP_OUT_H) and 0x42 (TEMP_OUT_L)
-  gyro_x = Wire.read()<<8 | Wire.read(); // reading registers: 0x43 (GYRO_XOUT_H) and 0x44 (GYRO_XOUT_L)
-  gyro_y = Wire.read()<<8 | Wire.read(); // reading registers: 0x45 (GYRO_YOUT_H) and 0x46 (GYRO_YOUT_L)
-  gyro_z = Wire.read()<<8 | Wire.read(); // reading registers: 0x47 (GYRO_ZOUT_H) and 0x48 (GYRO_ZOUT_L)
-  
-  // print out data
-  Serial.print("aX = "); Serial.print(convert_int16_to_str(accelerometer_x));
-  Serial.print(" | aY = "); Serial.print(convert_int16_to_str(accelerometer_y));
-  Serial.print(" | aZ = "); Serial.print(convert_int16_to_str(accelerometer_z));
-  // the following equation was taken from the documentation [MPU-6000/MPU-6050 Register Map and Description, p.30]
-  Serial.print(" | tmp = "); Serial.print(temperature/340.00+36.53);
-  Serial.print(" | gX = "); Serial.print(convert_int16_to_str(gyro_x));
-  Serial.print(" | gY = "); Serial.print(convert_int16_to_str(gyro_y));
-  Serial.print(" | gZ = "); Serial.print(convert_int16_to_str(gyro_z));
-  Serial.println();
-*/
+  motor_move();
 
 
 
@@ -187,7 +176,7 @@ void loop() {
 
 
   //analogWrite(motor1_pin_servo_lib, p_in);
-  //myservo1.writeMicroseconds(micros_p_in);
+  myservo1.writeMicroseconds(micros_p_in);
   
   
   

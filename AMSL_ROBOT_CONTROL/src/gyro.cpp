@@ -4,7 +4,9 @@
 void MPU_6050_update_Gyro_values(){
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
-
+    gyro_degrees += ((float)current_time - (float)gyro_update_loop_timer) / 1000.00 * (g.gyro.z-0.012760) * 180.00/PI;
+    gyro_update_loop_timer = current_time;
+    
     //Serial.print("Temperature:");
     //Serial.print(temp.temperature);
     //Serial.print("x-acceleration:");
@@ -17,8 +19,8 @@ void MPU_6050_update_Gyro_values(){
     //Serial.print(g.gyro.x);
     //Serial.print("\ty-gyro:");
     //Serial.print(g.gyro.y);
-    Serial.print("\tz-gyro:");
-    Serial.print(g.gyro.z,6);
+    //Serial.print("\tz-gyro:");
+    //Serial.print(g.gyro.z,6);
 
 
     //////////////////////////////
@@ -31,7 +33,7 @@ void MPU_6050_update_Gyro_values(){
     /////////////////////////
 
 
-    gyro_degrees += ((float)current_time - (float)gyro_update_loop_timer) / 1000.00 * (g.gyro.z-0.013898) * 180.00/PI;
+    
     Serial.print("  \tgyro degrees:");
     Serial.println(gyro_degrees);
 }
@@ -39,9 +41,58 @@ void MPU_6050_update_Gyro_values(){
 
 
 void BNO005_update_Gyro_values(){
-
+    /*
     sensors_event_t event; 
     bno.getEvent(&event);
+    imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE); // VECTOR_EULER   CIRCLES BACK TO 360
+    
+    //Display the floating point data 
+    Serial.print("X: ");
+    Serial.print(euler.x());
+    Serial.print(" Y: ");
+    Serial.print(euler.y());
+    Serial.print(" Z: ");
+    Serial.print(euler.z());
+    Serial.print("");
+    
+
+    
+    //////////////////////////////
+    //This CODE IS TO ONLY FIND THE STANDING ERROR OF GYRO
+    //float sample = euler.z();
+    //find_mean += sample;
+    //find_mean_counter+= 1.00;
+    //loat standing_gyro_mean = find_mean/find_mean_counter;// 0.005418 is a good number 0.013898
+    //Serial.print("  \tstanding_gyro_mean:");
+    //Serial.print(standing_gyro_mean, 6);
+    /////////////////////////
+
+    
+    gyro_degrees += ((float)(current_time - gyro_update_loop_timer)) / 1000.00 * ((float)(euler.z())) * 180.00/((float)PI);
+    Serial.print("  \ttime diff:");
+    Serial.print((float)(current_time - gyro_update_loop_timer));
+    gyro_update_loop_timer = current_time;
+    Serial.print("  \tgyro degrees:");
+    Serial.println(gyro_degrees);
+    */
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*
     // Display the floating point data  CIRCLES BACK TO 360
@@ -53,10 +104,10 @@ void BNO005_update_Gyro_values(){
     Serial.print(event.orientation.z, 4);
     Serial.println("");
     */
-    delay(100);
+    
 
     imu::Quaternion quat = bno.getQuat();
-    
+    /*
     //Display the quat data
     Serial.print("qW: ");
     Serial.print(quat.w(), 4);
@@ -69,43 +120,13 @@ void BNO005_update_Gyro_values(){
     Serial.println("");
     
     gyro_degrees = quat.z();
-
-    imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE); // VECTOR_EULER   CIRCLES BACK TO 360
-    /*
-    //Display the floating point data 
-    Serial.print("X: ");
-    Serial.print(euler.x());
-    Serial.print(" Y: ");
-    Serial.print(euler.y());
-    Serial.print(" Z: ");
-    Serial.print(euler.z());
-    Serial.print("");
-    */
-
-    /*
-    //////////////////////////////
-    //This CODE IS TO ONLY FIND THE STANDING ERROR OF GYRO
-    float sample = euler.z();
-    find_mean += sample;
-    find_mean_counter+= 1.00;
-    float standing_gyro_mean = find_mean/find_mean_counter;// 0.005418 is a good number 0.013898
-    Serial.print("  \tstanding_gyro_mean:");
-    Serial.print(standing_gyro_mean, 6);
-    /////////////////////////
-
-
-    gyro_degrees += ((float)(current_time - gyro_update_loop_timer)) / 1000.00 * ((float)(sample)) * 180.00/((float)PI);
-    Serial.print("  \tgyro degrees:");
-    Serial.println(gyro_degrees);
-
-
-    gyro_update_loop_timer = current_time;
     */
 
 }
 
 
 void gyro_PID_loop(){
+
     //ERROR
     gyro_PID_error = gyro_degrees; // If this is positive then it is leaning left and left wheel speed up 
 
@@ -131,6 +152,8 @@ void gyro_PID_loop(){
 
     if(gyro_foward_flag == true){
         if(gyro_PID_out >= 0){
+            myservo1.writeMicroseconds(micros_p_in - gyro_PID_out);
+
             //twinky_one_speed = twinky_max + gyro_PID_out/2;
             //twinky_two_speed = twinky_max - gyro_PID_out/2;
 

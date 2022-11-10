@@ -15,6 +15,9 @@
 void gyro_PID_loop();
 void MPU_6050_update_Gyro_values();
 void BNO005_update_Gyro_values();
+void motor_move();
+
+
 
 //GYRO PID LOOP VARIABLES
 extern Adafruit_BNO055 bno;
@@ -52,7 +55,8 @@ extern int micros_p_in;
 
 //Logic variables
 extern int end_flag; // low is to end on our side, high is to end on their side
-
+enum Direciton {forward, backward, left, right};
+extern Direciton current_direction;
 
 
 
