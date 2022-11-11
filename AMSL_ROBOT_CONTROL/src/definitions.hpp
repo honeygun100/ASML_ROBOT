@@ -11,12 +11,17 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
+//Logic variables
+extern int end_flag; // low is to end on our side, high is to end on their side
+enum Direciton {forward, backward, left, right};
+extern Direciton current_direction;
+
 //FUNCTION declarations
 void gyro_PID_loop();
 void MPU_6050_update_Gyro_values();
 void BNO005_update_Gyro_values();
 void motor_move();
-
+void choose_direction_and_move();
 
 
 //GYRO PID LOOP VARIABLES
@@ -53,10 +58,7 @@ extern int micros_p_in;
 
 
 
-//Logic variables
-extern int end_flag; // low is to end on our side, high is to end on their side
-enum Direciton {forward, backward, left, right};
-extern Direciton current_direction;
+
 
 
 

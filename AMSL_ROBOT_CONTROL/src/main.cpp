@@ -9,6 +9,22 @@
 
 
 
+
+
+
+//MOTOR Variables
+Servo myservo1; // Create Servo object to control the servo
+Servo myservo2;
+Servo myservo3;
+Servo myservo4;
+unsigned long current_time = 0;
+int p_in = 255/2;
+int micros_p_in = 1.5 * 1000; // no movement
+int whlpair1_micro_p_in_max = 1.628 * 1000; // to move wheel forward
+int whlpair2_micro_p_in_max = 1.628 * 1000; // to move wheel backward
+int whlpair1_micro_p_in_min = 1.373 * 1000; // to move wheel forward
+int whlpair2_micro_p_in_min = 1.373 * 1000; // to move wheel backward
+
 //GYRO PID LOOP VARIABLES
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 Adafruit_MPU6050 mpu;
@@ -24,24 +40,11 @@ float gyro_PID_P = 0.00; // extern
 float gyro_PID_I = 0.00; // extern
 float gyro_PID_D = 0.00; // extern
 float gyro_KP_divider = 1.00; // extern
-float gyro_PID_KP = 1.00/gyro_KP_divider; // extern
+float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
 float gyro_PID_KI = 0.00; // extern
 float gyro_PID_KD = 6.00; // extern
 float gyro_PID_out = 0.00; // extern
 bool gyro_foward_flag = true; // extern
-
-
-//MOTOR Variables
-Servo myservo1; // Create Servo object to control the servo
-Servo myservo2;
-Servo myservo3;
-Servo myservo4;
-unsigned long current_time = 0;
-int p_in = 255/2;
-int micros_p_in = 1.5 * 1000;
-int micro_p_in_max = 1.5 * 1000; // to move wheel forward
-int micro_p_in_min = 1.5 * 1000; // to move wheel backward
-
 
 //Logic variables
 int end_flag = 0; // low is to end on our side, high is to end on their side
@@ -89,7 +92,7 @@ void setup() {
   */
 
 
-  
+  /*
   // Try to initialize BNO005!
   if(!bno.begin()){
     // There was a problem detecting the BNO055 ... check your connections 
@@ -98,7 +101,7 @@ void setup() {
   }
   delay(1000);
   bno.setExtCrystalUse(true);
-  
+  */
 
 
 
@@ -128,47 +131,65 @@ void loop() {
     if(incomingCharacter == '1'){
       p_in++;
       micros_p_in++;
+      Serial.print(p_in);
+      Serial.print("  ");
+      Serial.println(micros_p_in);
     }else if(incomingCharacter == '2'){
       p_in--;
       micros_p_in--;
+      Serial.print(p_in);
+      Serial.print("  ");
+      Serial.println(micros_p_in);
+    }else if(incomingCharacter == '3'){
+      gyro_KP_divider += .01;
+      Serial.print("kp_divider is ");
+      Serial.print(gyro_KP_divider);
+      gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
+      Serial.print("\tkp is ");
+      Serial.println(gyro_PID_KP);
+    }else if(incomingCharacter == '4'){
+      gyro_KP_divider -= .01;
+      Serial.print("kp_divider is ");
+      Serial.print(gyro_KP_divider);
+      gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
+      Serial.print("\tkp is ");
+      Serial.println(gyro_PID_KP);
+    }else if(incomingCharacter == '5'){
+      gyro_PID_KI += .5;
+      Serial.print("gyro_PID_KI is ");
+      Serial.println(gyro_PID_KI);
+    }else if(incomingCharacter == '6'){
+      gyro_PID_KI -= .5;
+      Serial.print("gyro_PID_KI is ");
+      Serial.println(gyro_PID_KI);
+    }else if(incomingCharacter == '7'){
+      gyro_PID_KD += .5;
+      Serial.print("gyro_PID_KD is ");
+      Serial.println(gyro_PID_KD);
+    }else if(incomingCharacter == '8'){
+      gyro_PID_KD -= .5;
+      Serial.print("gyro_PID_KD is ");
+      Serial.println(gyro_PID_KD);
+
     }
 
-    Serial.print(p_in);
-    Serial.print("  ");
-    Serial.println(micros_p_in);
+
+
+
+
+
+
+
+
+
+    
   }		
 
   
-  //UPDATE_GYRO_VALUES
-  /*
-  current_time = millis();
-  if(current_time - gyro_update_loop_timer > .000000000000001){ //100hz
-      MPU_6050_update_Gyro_values(); 
-      gyro_update_loop_timer = current_time;
-    }
-  */
 
+  current_direction = forward;
+  choose_direction_and_move();
   
-  /*
-  current_time = millis();
-  if(current_time - gyro_update_loop_timer > 1000){ //100hz
-    BNO005_update_Gyro_values(); 
-    gyro_update_loop_timer = current_time;
-  }
-  */
-
-  current_time = millis();
-  BNO005_update_Gyro_values(); 
-  //MPU_6050_update_Gyro_values();
-
-  //GYRO_PID_LOOP
-  if(current_time - gyro_PID_loop_timer > 20){ //50hz
-    gyro_PID_loop();
-    gyro_PID_loop_timer = current_time;
-  }
-  motor_move();
-
-
 
 
 
@@ -177,9 +198,9 @@ void loop() {
 
   //analogWrite(motor1_pin_servo_lib, p_in);
   myservo1.writeMicroseconds(micros_p_in);
-  
-  
-  
+  myservo2.writeMicroseconds(micros_p_in);
+  myservo3.writeMicroseconds(micros_p_in);
+  myservo4.writeMicroseconds(micros_p_in);
   
 
 }

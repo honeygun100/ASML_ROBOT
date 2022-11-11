@@ -41,6 +41,7 @@ void MPU_6050_update_Gyro_values(){
 
 
 void BNO005_update_Gyro_values(){
+    
     /*
     sensors_event_t event; 
     bno.getEvent(&event);
@@ -106,8 +107,9 @@ void BNO005_update_Gyro_values(){
     */
     
 
-    imu::Quaternion quat = bno.getQuat();
+
     /*
+    imu::Quaternion quat = bno.getQuat();
     //Display the quat data
     Serial.print("qW: ");
     Serial.print(quat.w(), 4);
@@ -126,7 +128,7 @@ void BNO005_update_Gyro_values(){
 
 
 void gyro_PID_loop(){
-
+    
     //ERROR
     gyro_PID_error = gyro_degrees; // If this is positive then it is leaning left and left wheel speed up 
 
@@ -149,7 +151,7 @@ void gyro_PID_loop(){
 
 
 
-
+    /*
     if(gyro_foward_flag == true){
         if(gyro_PID_out >= 0){
             myservo1.writeMicroseconds(micros_p_in - gyro_PID_out);
@@ -173,7 +175,7 @@ void gyro_PID_loop(){
 
         }
     }
-
+    */
 }
 
 
