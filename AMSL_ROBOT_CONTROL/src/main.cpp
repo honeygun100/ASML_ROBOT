@@ -20,10 +20,10 @@ Servo myservo4;
 unsigned long current_time = 0;
 int p_in = 255/2;
 int micros_p_in = 1.5 * 1000; // no movement
-int whlpair1_micro_p_in_max = 1.628 * 1000; // to move wheel forward
-int whlpair2_micro_p_in_max = 1.628 * 1000; // to move wheel backward
-int whlpair1_micro_p_in_min = 1.373 * 1000; // to move wheel forward
-int whlpair2_micro_p_in_min = 1.373 * 1000; // to move wheel backward
+int whlpair1_micro_p_in_max = 1.628 * 1000; // to move wheel forward wheel 1 and 3
+int whlpair2_micro_p_in_max = 1.628 * 1000; // to move wheel backward wheel 1 and 3
+int whlpair1_micro_p_in_min = 1.373 * 1000; // to move wheel forward wheel 2 and 4
+int whlpair2_micro_p_in_min = 1.373 * 1000; // to move wheel backward wheel 2 and 4
 
 //GYRO PID LOOP VARIABLES
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
@@ -92,7 +92,7 @@ void setup() {
   */
 
 
-  /*
+  
   // Try to initialize BNO005!
   if(!bno.begin()){
     // There was a problem detecting the BNO055 ... check your connections 
@@ -101,7 +101,7 @@ void setup() {
   }
   delay(1000);
   bno.setExtCrystalUse(true);
-  */
+  
 
 
 
@@ -176,12 +176,6 @@ void loop() {
 
 
 
-
-
-
-
-
-
     
   }		
 
@@ -197,10 +191,10 @@ void loop() {
 
 
   //analogWrite(motor1_pin_servo_lib, p_in);
-  myservo1.writeMicroseconds(micros_p_in);
-  myservo2.writeMicroseconds(micros_p_in);
-  myservo3.writeMicroseconds(micros_p_in);
-  myservo4.writeMicroseconds(micros_p_in);
+  //myservo1.writeMicroseconds(micros_p_in);
+  //myservo2.writeMicroseconds(micros_p_in);
+  //myservo3.writeMicroseconds(micros_p_in);
+  //myservo4.writeMicroseconds(micros_p_in);
   
 
 }

@@ -22,7 +22,15 @@ void MPU_6050_update_Gyro_values();
 void BNO005_update_Gyro_values();
 void motor_move();
 void choose_direction_and_move();
+void control_move_forward(float leftwheel_p_in, float rightwheel_p_in);
+void control_move_backward(float leftwheel_p_in, float rightwheel_p_in);
+void control_move_left(float frontwheel_p_in, float backwheel_p_in);
+void control_move_right(float frontwheel_p_in, float backwheel_p_in);
 
+void move_forward(float leftwheel_p_in, float rightwheel_p_in);
+void move_backward(float leftwheel_p_in, float rightwheel_p_in);
+void move_left(float frontwheel_p_in, float backwheel_p_in);
+void move_right(float frontwheel_p_in, float backwheel_p_in);
 
 //GYRO PID LOOP VARIABLES
 extern Adafruit_BNO055 bno;
@@ -54,8 +62,11 @@ extern Servo myservo3;
 extern Servo myservo4;
 extern unsigned long current_time;
 extern int p_in;
-extern int micros_p_in;
-
+extern int micros_p_in; // no movement
+extern int whlpair1_micro_p_in_max; // to move wheel forward
+extern int whlpair2_micro_p_in_max; // to move wheel backward
+extern int whlpair1_micro_p_in_min; // to move wheel forward
+extern int whlpair2_micro_p_in_min; // to move wheel backward
 
 
 

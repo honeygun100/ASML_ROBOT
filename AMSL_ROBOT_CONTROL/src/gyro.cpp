@@ -108,11 +108,17 @@ void BNO005_update_Gyro_values(){
     
 
 
-    /*
+    
     imu::Quaternion quat = bno.getQuat();
     //Display the quat data
     Serial.print("qW: ");
-    Serial.print(quat.w(), 4);
+    float new_qW = -1.00*(quat.w()-1);
+    if(quat.z() >= 0){ // we are turning left
+        new_qW = new_qW * 1.00;
+    }else{ // we are turning right
+        new_qW = new_qW * -1.00;
+    }
+    Serial.print(new_qW, 4);
     Serial.print(" qX: ");
     Serial.print(quat.y(), 4);
     Serial.print(" qY: ");
@@ -122,7 +128,7 @@ void BNO005_update_Gyro_values(){
     Serial.println("");
     
     gyro_degrees = quat.z();
-    */
+    
 
 }
 
@@ -137,8 +143,8 @@ void gyro_PID_loop(){
 
     //INTEGRAL
     gyro_PID_I += (gyro_PID_error) * (float)(current_time - gyro_PID_loop_timer) * gyro_PID_KI;
-    //if(gyro_PID_I > 255) line_follow_PID_I = 255;
-    //if(gyro_PID_I < -255) line_follow_PID_I = -255;
+    if(gyro_PID_I > whlpair1_micro_p_in_max) gyro_PID_I = whlpair1_micro_p_in_max;
+    if(gyro_PID_I < whlpair1_micro_p_in_min) gyro_PID_I = whlpair1_micro_p_in_min;
 
     //DERIVATIVE
     gyro_PID_D = ((gyro_PID_error - gyro_PID_error_prev) / (float)(current_time - gyro_PID_loop_timer)) * gyro_PID_KD;
@@ -146,15 +152,14 @@ void gyro_PID_loop(){
 
     // SUMMATION
     gyro_PID_out = gyro_PID_P + gyro_PID_I + gyro_PID_D;
-    //if(gyro_PID_out > twinky_max) gyro_PID_out = twinky_max;
-    //if(gyro_PID_out < twinky_min) gyro_PID_out = twinky_min;
+    if(gyro_PID_out > whlpair1_micro_p_in_max) gyro_PID_out = whlpair1_micro_p_in_max;
+    if(gyro_PID_out < whlpair1_micro_p_in_min) gyro_PID_out = whlpair1_micro_p_in_min;
 
 
 
     /*
     if(gyro_foward_flag == true){
         if(gyro_PID_out >= 0){
-            myservo1.writeMicroseconds(micros_p_in - gyro_PID_out);
 
             //twinky_one_speed = twinky_max + gyro_PID_out/2;
             //twinky_two_speed = twinky_max - gyro_PID_out/2;
