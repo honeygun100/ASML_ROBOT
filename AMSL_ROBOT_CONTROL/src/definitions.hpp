@@ -41,7 +41,8 @@ extern float gyro_degrees;
 extern float find_mean;
 extern float find_mean_counter;
 
-extern float gyro_degrees;                                  
+extern float gyro_degrees;      
+extern float gyro_degrees2;                         
 extern float gyro_PID_error; 
 extern float gyro_PID_error_prev; 
 extern float gyro_PID_P; 

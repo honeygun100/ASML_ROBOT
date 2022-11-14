@@ -21,11 +21,10 @@ void choose_direction_and_move(){
     }
     */
 
-    
+    current_time = millis();
     BNO005_update_Gyro_values(); 
     //MPU_6050_update_Gyro_values();
 
-    current_time = millis();
     //GYRO_PID_LOOP
     if(current_time - gyro_PID_loop_timer > 20){ //50hz
         gyro_PID_loop();
@@ -33,7 +32,7 @@ void choose_direction_and_move(){
     }
 
     //go to wheel and write pwm wave depending on direciton
-    motor_move();
+    //motor_move();
 
 
 
@@ -94,21 +93,6 @@ void motor_move(){
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -42,7 +42,7 @@ void MPU_6050_update_Gyro_values(){
 
 void BNO005_update_Gyro_values(){
     
-    /*
+    
     sensors_event_t event; 
     bno.getEvent(&event);
     imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE); // VECTOR_EULER   CIRCLES BACK TO 360
@@ -69,13 +69,13 @@ void BNO005_update_Gyro_values(){
     /////////////////////////
 
     
-    gyro_degrees += ((float)(current_time - gyro_update_loop_timer)) / 1000.00 * ((float)(euler.z())) * 180.00/((float)PI);
-    Serial.print("  \ttime diff:");
-    Serial.print((float)(current_time - gyro_update_loop_timer));
+    gyro_degrees2 += ((float)(current_time - gyro_update_loop_timer)) / 1000.00 * ((float)(euler.z())) * 180.00/((float)PI);
+    //Serial.print("  \ttime diff:");
+    //Serial.print((float)(current_time - gyro_update_loop_timer));
     gyro_update_loop_timer = current_time;
-    Serial.print("  \tgyro degrees:");
-    Serial.println(gyro_degrees);
-    */
+    Serial.print("  \tgyro degrees:  ");
+    Serial.print(gyro_degrees2);
+    Serial.print("||||||||||||||||");
 
     
 

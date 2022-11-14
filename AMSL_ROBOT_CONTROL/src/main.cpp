@@ -33,7 +33,8 @@ unsigned long gyro_PID_loop_timer = 0;
 float find_mean = 0.00;
 float find_mean_counter = 0.00;
 
-float gyro_degrees = 0.00; // extern                                     
+float gyro_degrees = 0.00; // extern     
+float gyro_degrees2 = 0.00; // extern
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
 float gyro_PID_P = 0.00; // extern
@@ -128,7 +129,7 @@ void loop() {
   // Use Serial to test inputs to motors and speeds/calibrate motors
   if(Serial.available()){
     char incomingCharacter = Serial.read();
-    if(incomingCharacter == '1'){
+    if(incomingCharacter == '1'){ // case one and two are for test code at bottom of void loop()
       p_in++;
       micros_p_in++;
       Serial.print(p_in);
@@ -189,12 +190,12 @@ void loop() {
 
 
 
-
+  //motor test code
   //analogWrite(motor1_pin_servo_lib, p_in);
-  //myservo1.writeMicroseconds(micros_p_in);
-  //myservo2.writeMicroseconds(micros_p_in);
-  //myservo3.writeMicroseconds(micros_p_in);
-  //myservo4.writeMicroseconds(micros_p_in);
+  //myservo1.writeMicroseconds(micros_p_in); // left wheel
+  //myservo2.writeMicroseconds(micros_p_in); // front wheel
+  //myservo3.writeMicroseconds(micros_p_in); // right wheel
+  //myservo4.writeMicroseconds(micros_p_in); // back wheel
   
 
 }
