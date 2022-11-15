@@ -52,35 +52,53 @@ void choose_direction_and_move(){
 // SOME OF THESE ...max and ...min NEED TO CHANGE DEPENDING ON HOW MOTORS ARE MOUNTED
 void motor_move(){
     if(current_direction == forward){
-        if(gyro_PID_out >= 0){ // this would mean the robot is leaning left, speed left wheel up and right wheel down
-            control_move_forward(whlpair1_micro_p_in_max + gyro_PID_out, whlpair1_micro_p_in_max - gyro_PID_out);
+        if(gyro_PID_out >= 0){ 
+            // this would mean the robot is leaning left, speed left wheel up and right wheel down
+            // we need motor 1 to go counter-clockwise and motor 3 to go clockwise
+            control_move_forward(whlpair1_micro_p_in_max + gyro_PID_out, whlpair1_micro_p_in_min + gyro_PID_out);
+
         }else{
+            // this would mean the robot is leaning right, speed right wheel up and left wheel down
+            // we need motor 1 to go counter-clockwise and motor 3 to go clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_forward(whlpair1_micro_p_in_max - gyro_PID_out, whlpair1_micro_p_in_max + gyro_PID_out);
+            control_move_forward(whlpair1_micro_p_in_max - gyro_PID_out, whlpair1_micro_p_in_min - gyro_PID_out);
         }
 
     }else if(current_direction == backward){
-        if(gyro_PID_out >= 0){ // this would mean the robot is leaning left, speed left wheel up and right wheel down
-            control_move_backward(whlpair1_micro_p_in_max + gyro_PID_out, whlpair1_micro_p_in_max - gyro_PID_out);
+        if(gyro_PID_out >= 0){ 
+            // this would mean the robot is leaning left, speed right wheel up and left wheel down
+            // we need motor 1 to go clockwise and motor 3 to go counter-clockwise
+            control_move_backward(whlpair1_micro_p_in_min + gyro_PID_out, whlpair1_micro_p_in_max + gyro_PID_out);
         }else{
+            // this would mean the robot is leaning right, speed right wheel down and left wheel up
+            // we need motor 1 to go clockwise and motor 3 to go counter-clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_backward(whlpair1_micro_p_in_max - gyro_PID_out, whlpair1_micro_p_in_max + gyro_PID_out);
+            control_move_backward(whlpair1_micro_p_in_min - gyro_PID_out, whlpair1_micro_p_in_max - gyro_PID_out);
         }
 
+
     }else if(current_direction == left){ 
-        if(gyro_PID_out >= 0){ // this would mean the robot is leaning left, speed left wheel up and right wheel down
-            control_move_left(whlpair2_micro_p_in_max + gyro_PID_out, whlpair2_micro_p_in_max - gyro_PID_out);
+        if(gyro_PID_out >= 0){ 
+            // this would mean the robot is leaning left, speed front wheel down and back wheel up
+            // we need motor 2 to go clockwise and motor 4 to go counter-clockwise
+            control_move_left(whlpair2_micro_p_in_min + gyro_PID_out, whlpair2_micro_p_in_max + gyro_PID_out);
         }else{
+            // this would mean the robot is leaning right, speed front wheel up and back wheel down
+            // we need motor 2 to go clockwise and motor 4 to go counter-clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_left(whlpair2_micro_p_in_max - gyro_PID_out, whlpair2_micro_p_in_max + gyro_PID_out);
+            control_move_left(whlpair2_micro_p_in_min - gyro_PID_out, whlpair2_micro_p_in_max - gyro_PID_out);
         }
 
     }else if(current_direction == right){
-        if(gyro_PID_out >= 0){ // this would mean the robot is leaning left, speed left wheel up and right wheel down
-            control_move_right(whlpair2_micro_p_in_max + gyro_PID_out, whlpair2_micro_p_in_max - gyro_PID_out);
+        if(gyro_PID_out >= 0){ 
+            // this would mean the robot is leaning left, speed front wheel up and back wheel down
+            // we need motor 2 to go counter-clockwise and motor 4 to go clockwise
+            control_move_right(whlpair2_micro_p_in_max + gyro_PID_out, whlpair2_micro_p_in_min + gyro_PID_out);
         }else{
+            // this would mean the robot is leaning right, speed front wheel down and back wheel up
+            // we need motor 2 to go counter-clockwise and motor 4 to go clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_right(whlpair2_micro_p_in_max - gyro_PID_out, whlpair2_micro_p_in_max + gyro_PID_out);
+            control_move_right(whlpair2_micro_p_in_max - gyro_PID_out, whlpair2_micro_p_in_min - gyro_PID_out);
         }
 
     }else{

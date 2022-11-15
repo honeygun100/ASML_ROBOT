@@ -43,7 +43,7 @@ float gyro_PID_D = 0.00; // extern
 float gyro_KP_divider = 1.00; // extern
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
 float gyro_PID_KI = 0.00; // extern
-float gyro_PID_KD = 6.00; // extern
+float gyro_PID_KD = 0.00; // extern
 float gyro_PID_out = 0.00; // extern
 bool gyro_foward_flag = true; // extern
 
@@ -183,7 +183,7 @@ void loop() {
   
 
   current_direction = forward;
-  choose_direction_and_move();
+  //choose_direction_and_move();
   
 
 
@@ -192,7 +192,8 @@ void loop() {
 
   //motor test code
   //analogWrite(motor1_pin_servo_lib, p_in);
-  //myservo1.writeMicroseconds(micros_p_in); // left wheel
+  //myservo1.writeMicroseconds(micros_p_in); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
+                                           //                                                   1.373 * 1000 for motor one to move backward clockwise
   //myservo2.writeMicroseconds(micros_p_in); // front wheel
   //myservo3.writeMicroseconds(micros_p_in); // right wheel
   //myservo4.writeMicroseconds(micros_p_in); // back wheel
