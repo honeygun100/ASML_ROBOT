@@ -63,7 +63,8 @@ extern Servo myservo3;
 extern Servo myservo4;
 extern unsigned long current_time;
 extern int p_in;
-extern int micros_p_in; // no movement
+extern int micros_p_in;
+extern int no_move_p_in; // no movement
 extern int whlpair1_micro_p_in_max; // to move wheel forward
 extern int whlpair2_micro_p_in_max; // to move wheel backward
 extern int whlpair1_micro_p_in_min; // to move wheel forward

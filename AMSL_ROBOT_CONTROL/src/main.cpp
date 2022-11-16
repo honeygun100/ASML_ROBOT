@@ -19,7 +19,8 @@ Servo myservo3;
 Servo myservo4;
 unsigned long current_time = 0;
 int p_in = 255/2;
-int micros_p_in = 1.5 * 1000; // no movement
+int micros_p_in = 1.5 * 1000;
+int no_move_p_in = 1.5 * 1000; // no movement
 int whlpair1_micro_p_in_max = 1.628 * 1000; // to move wheel forward wheel 1 and 3
 int whlpair2_micro_p_in_max = 1.628 * 1000; // to move wheel backward wheel 1 and 3
 int whlpair1_micro_p_in_min = 1.373 * 1000; // to move wheel forward wheel 2 and 4
@@ -183,7 +184,7 @@ void loop() {
   
 
   current_direction = forward;
-  //choose_direction_and_move();
+  choose_direction_and_move();
   
 
 
@@ -197,7 +198,7 @@ void loop() {
   //myservo2.writeMicroseconds(micros_p_in); // front wheel
   //myservo3.writeMicroseconds(micros_p_in); // right wheel
   //myservo4.writeMicroseconds(micros_p_in); // back wheel
-  
+  Serial.println("");
 
 }
 

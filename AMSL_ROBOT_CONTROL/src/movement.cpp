@@ -32,7 +32,7 @@ void choose_direction_and_move(){
     }
 
     //go to wheel and write pwm wave depending on direciton
-    //motor_move();
+    motor_move();
 
 
 
@@ -52,6 +52,7 @@ void choose_direction_and_move(){
 // SOME OF THESE ...max and ...min NEED TO CHANGE DEPENDING ON HOW MOTORS ARE MOUNTED
 void motor_move(){
     if(current_direction == forward){
+        //Serial.print("HELLLLLLLLLLLLLLLLLLLLLLLLO");
         if(gyro_PID_out >= 0){ 
             // this would mean the robot is leaning left, speed left wheel up and right wheel down
             // we need motor 1 to go counter-clockwise and motor 3 to go clockwise
@@ -119,8 +120,8 @@ void motor_move(){
 
 void control_move_forward(float leftwheel_p_in, float rightwheel_p_in){
     //turn off not needed wheels
-    myservo2.writeMicroseconds(micros_p_in); // front wheel
-    myservo4.writeMicroseconds(micros_p_in); // back wheel
+    myservo2.writeMicroseconds(no_move_p_in); // front wheel
+    myservo4.writeMicroseconds(no_move_p_in); // back wheel
     //turn on appropriate wheels
     myservo1.writeMicroseconds(leftwheel_p_in); // left wheel
     myservo3.writeMicroseconds(rightwheel_p_in); // right wheel
@@ -128,8 +129,8 @@ void control_move_forward(float leftwheel_p_in, float rightwheel_p_in){
 
 void control_move_backward(float leftwheel_p_in, float rightwheel_p_in){
     //turn off not needed wheels
-    myservo2.writeMicroseconds(micros_p_in); // front wheel
-    myservo4.writeMicroseconds(micros_p_in); // back wheel
+    myservo2.writeMicroseconds(no_move_p_in); // front wheel
+    myservo4.writeMicroseconds(no_move_p_in); // back wheel
     //turn on appropriate wheels
     myservo1.writeMicroseconds(leftwheel_p_in); // left wheel
     myservo3.writeMicroseconds(rightwheel_p_in); // right wheel
@@ -137,8 +138,8 @@ void control_move_backward(float leftwheel_p_in, float rightwheel_p_in){
 
 void control_move_left(float frontwheel_p_in, float backwheel_p_in){
     //turn off not needed wheels
-    myservo1.writeMicroseconds(micros_p_in); // left wheel
-    myservo3.writeMicroseconds(micros_p_in); // right wheel
+    myservo1.writeMicroseconds(no_move_p_in); // left wheel
+    myservo3.writeMicroseconds(no_move_p_in); // right wheel
     //turn on appropriate wheels
     myservo2.writeMicroseconds(frontwheel_p_in); // front wheel
     myservo4.writeMicroseconds(backwheel_p_in); // back wheel
@@ -146,8 +147,8 @@ void control_move_left(float frontwheel_p_in, float backwheel_p_in){
 
 void control_move_right(float frontwheel_p_in, float backwheel_p_in){
     //turn off not needed wheels
-    myservo1.writeMicroseconds(micros_p_in); // left wheel
-    myservo3.writeMicroseconds(micros_p_in); // right wheel
+    myservo1.writeMicroseconds(no_move_p_in); // left wheel
+    myservo3.writeMicroseconds(no_move_p_in); // right wheel
     //turn on appropriate wheels
     myservo2.writeMicroseconds(frontwheel_p_in); // front wheel
     myservo4.writeMicroseconds(backwheel_p_in); // back wheel
