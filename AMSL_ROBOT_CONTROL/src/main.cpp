@@ -38,15 +38,18 @@ float gyro_degrees = 0.00; // extern
 float gyro_degrees2 = 0.00; // extern
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
+
 float gyro_PID_P = 0.00; // extern
 float gyro_PID_I = 0.00; // extern
 float gyro_PID_D = 0.00; // extern
-float gyro_KP_divider = 1.00; // extern
+
+float gyro_KP_divider = 1.22; // extern 1.00 is ok, try 1.22 for now, larger gyro_KP_divider makes gyro_PID_KP smaller which makes gyro_PID_P smaller, so more angle to slow down
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
 float gyro_PID_KI = 0.00; // extern
 float gyro_PID_KD = 0.00; // extern
 float gyro_PID_out = 0.00; // extern
-bool gyro_foward_flag = true; // extern
+
+bool gyro_foward_flag = true; // extern NOT USED
 
 //Logic variables
 int end_flag = 0; // low is to end on our side, high is to end on their side
