@@ -5,12 +5,15 @@
 #define motor2_pin_servo_lib 5
 #define motor3_pin_servo_lib 6
 #define motor4_pin_servo_lib 9
+//bar 1 interp 1.628 and 1.373 
+//bar 2 interp 1.588 and 1.413
 
 
 
+//with bar 1 interpolation and qw make KD 90.5 and KP divider .24 or maybe .10?
+//with bat 1 interpolation and qz try KP divider 1.22 for now, larger gyro_KP_divider makes gyro_PID_KP smaller which makes gyro_PID_P smaller, so more angle to slow down
 
-
-
+//with bar 2 interpolation and qw make KD 90.5 and KP divider .125?
 
 //MOTOR Variables
 Servo myservo1; // Create Servo object to control the servo
@@ -21,10 +24,10 @@ unsigned long current_time = 0;
 int p_in = 255/2;
 int micros_p_in = 1.5 * 1000;
 int no_move_p_in = 1.5 * 1000; // no movement
-int whlpair1_micro_p_in_max = 1.628 * 1000; // to move wheel forward wheel 1 and 3
-int whlpair2_micro_p_in_max = 1.628 * 1000; // to move wheel backward wheel 1 and 3
-int whlpair1_micro_p_in_min = 1.373 * 1000; // to move wheel forward wheel 2 and 4
-int whlpair2_micro_p_in_min = 1.373 * 1000; // to move wheel backward wheel 2 and 4
+int whlpair1_micro_p_in_max = 1.588 * 1000; // to move wheel forward wheel 1 and 3 1.628
+int whlpair2_micro_p_in_max = 1.588 * 1000; // to move wheel backward wheel 1 and 3 1.628
+int whlpair1_micro_p_in_min = 1.413 * 1000; // to move wheel forward wheel 2 and 4 1.373 
+int whlpair2_micro_p_in_min = 1.413 * 1000; // to move wheel backward wheel 2 and 4 1.373
 
 //GYRO PID LOOP VARIABLES
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
@@ -41,12 +44,12 @@ float gyro_PID_error_prev = 0.00; // extern
 
 float gyro_PID_P = 0.00; // extern
 float gyro_PID_I = 0.00; // extern
-float gyro_PID_D = 0.00; // extern
+float gyro_PID_D = 0.00; // extern 
 
-float gyro_KP_divider = 1.22; // extern 1.00 is ok, try 1.22 for now, larger gyro_KP_divider makes gyro_PID_KP smaller which makes gyro_PID_P smaller, so more angle to slow down
+float gyro_KP_divider = .125; // extern 
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
 float gyro_PID_KI = 0.00; // extern
-float gyro_PID_KD = 0.00; // extern
+float gyro_PID_KD = 90.5; // extern
 float gyro_PID_out = 0.00; // extern
 
 bool gyro_foward_flag = true; // extern NOT USED
@@ -146,16 +149,16 @@ void loop() {
       Serial.print("  ");
       Serial.println(micros_p_in);
     }else if(incomingCharacter == '3'){
-      gyro_KP_divider += .01;
+      gyro_KP_divider += .005;
       Serial.print("kp_divider is ");
-      Serial.print(gyro_KP_divider);
+      Serial.print(gyro_KP_divider,4);
       gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
       Serial.print("\tkp is ");
       Serial.println(gyro_PID_KP);
     }else if(incomingCharacter == '4'){
-      gyro_KP_divider -= .01;
+      gyro_KP_divider -= .005;
       Serial.print("kp_divider is ");
-      Serial.print(gyro_KP_divider);
+      Serial.print(gyro_KP_divider,4);
       gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
       Serial.print("\tkp is ");
       Serial.println(gyro_PID_KP);
@@ -186,7 +189,7 @@ void loop() {
 
   
 
-  current_direction = forward;
+  current_direction = left;
   choose_direction_and_move();
   
 

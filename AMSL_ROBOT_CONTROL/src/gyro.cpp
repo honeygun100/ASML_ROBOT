@@ -128,8 +128,8 @@ void BNO005_update_Gyro_values(){
     Serial.print(" qZ: ");
     Serial.print(quat.z(), 4);
 
-    
-    gyro_degrees = quat.z();
+    gyro_degrees = new_qW;
+    //gyro_degrees = quat.z();
     
 
 }
@@ -138,13 +138,13 @@ void BNO005_update_Gyro_values(){
 void gyro_PID_loop(){
     
     //ERROR
-    gyro_PID_error = gyro_degrees; // If this is positive then it is leaning left and left wheel speed up 
+    gyro_PID_error = gyro_degrees; // If this is positive then it is leaning left and left wheel speed up
 
     //PROPORTIONAL
-    gyro_PID_P = gyro_PID_error * gyro_PID_KP;
+    gyro_PID_P = gyro_PID_error * gyro_PID_KP; // error is a decimal and KP is max vaue.
 
     //INTEGRAL
-    //gyro_PID_I += (gyro_PID_error) * (float)(current_time - gyro_PID_loop_timer) * gyro_PID_KI;
+    gyro_PID_I += (gyro_PID_error) * (float)(current_time - gyro_PID_loop_timer) * gyro_PID_KI;
     ///if(gyro_PID_I > whlpair1_micro_p_in_max) gyro_PID_I = whlpair1_micro_p_in_max;
     //if(gyro_PID_I < whlpair1_micro_p_in_min) gyro_PID_I = whlpair1_micro_p_in_min;
 
@@ -153,7 +153,7 @@ void gyro_PID_loop(){
     gyro_PID_error_prev = gyro_PID_error;
 
     // SUMMATION
-    gyro_PID_out = gyro_PID_P + gyro_PID_I + gyro_PID_D;
+    gyro_PID_out = gyro_PID_P + gyro_PID_I + gyro_PID_D; 
     //if(gyro_PID_out > whlpair1_micro_p_in_max) gyro_PID_out = whlpair1_micro_p_in_max;
     //if(gyro_PID_out < whlpair1_micro_p_in_min) gyro_PID_out = whlpair1_micro_p_in_min;
     Serial.print("  gyro_PID_out: ");
