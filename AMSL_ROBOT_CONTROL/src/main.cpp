@@ -10,7 +10,7 @@
 
 
 
-//with bar 1 interpolation and qw make KD 90.5 and KP divider .24 or maybe .10?
+//with bar 1 interpolation and qw make KD 90.5 and KP divider .185 or maybe .10?
 //with bat 1 interpolation and qz try KP divider 1.22 for now, larger gyro_KP_divider makes gyro_PID_KP smaller which makes gyro_PID_P smaller, so more angle to slow down
 
 //with bar 2 interpolation and qw make KD 90.5 and KP divider .125?
@@ -18,16 +18,19 @@
 //MOTOR Variables
 Servo myservo1; // Create Servo object to control the servo
 Servo myservo2;
-Servo myservo3;
+Servo myservo3; 
 Servo myservo4;
 unsigned long current_time = 0;
 int p_in = 255/2;
 int micros_p_in = 1.5 * 1000;
 int no_move_p_in = 1.5 * 1000; // no movement
-int whlpair1_micro_p_in_max = 1.588 * 1000; // to move wheel forward wheel 1 and 3 1.628
-int whlpair2_micro_p_in_max = 1.588 * 1000; // to move wheel backward wheel 1 and 3 1.628
-int whlpair1_micro_p_in_min = 1.413 * 1000; // to move wheel forward wheel 2 and 4 1.373 
-int whlpair2_micro_p_in_min = 1.413 * 1000; // to move wheel backward wheel 2 and 4 1.373
+float whlpair1_micro_p_in_max = 1.628 * 1000; // to move wheel forward, wheel 1 and 3 1.628
+float whlpair2_micro_p_in_max = 1.628 * 1000; // to move wheel backward, wheel 1 and 3 1.628
+float whlpair1_micro_p_in_min = 1.373 * 1000; // to move wheel forward, wheel 2 and 4 1.373 
+float whlpair2_micro_p_in_min = 1.373 * 1000; // to move wheel backward, wheel 2 and 4 1.373
+float offset1 = 0.00; // maybe 50.00
+float offset2 = 0.00;
+
 
 //GYRO PID LOOP VARIABLES
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
@@ -36,6 +39,7 @@ unsigned long gyro_update_loop_timer = 0;
 unsigned long gyro_PID_loop_timer = 0;
 float find_mean = 0.00;
 float find_mean_counter = 0.00;
+float gyro_read_offset = 0.00006104;
 
 float gyro_degrees = 0.00; // extern     
 float gyro_degrees2 = 0.00; // extern
@@ -46,10 +50,10 @@ float gyro_PID_P = 0.00; // extern
 float gyro_PID_I = 0.00; // extern
 float gyro_PID_D = 0.00; // extern 
 
-float gyro_KP_divider = .125; // extern 
+float gyro_KP_divider = .185; // extern 
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
 float gyro_PID_KI = 0.00; // extern
-float gyro_PID_KD = 90.5; // extern
+float gyro_PID_KD = 58.50; // extern
 float gyro_PID_out = 0.00; // extern
 
 bool gyro_foward_flag = true; // extern NOT USED
@@ -116,10 +120,10 @@ void setup() {
 
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
-
-
+  
 
   current_direction = forward;
+  delay(100);
 }
 
 
@@ -179,6 +183,26 @@ void loop() {
       Serial.print("gyro_PID_KD is ");
       Serial.println(gyro_PID_KD);
 
+    }else if(incomingCharacter == 'z'){
+      offset1 += .5;
+      Serial.print("offset1 is ");
+      Serial.println(offset1);
+
+    }else if(incomingCharacter == 'x'){
+      offset1 -= .5;
+      Serial.print("offset1 is ");
+      Serial.println(offset1);
+
+    }else if(incomingCharacter == 'c'){
+      offset2 += .5;
+      Serial.print("offset2 is ");
+      Serial.println(offset2);
+
+    }else if(incomingCharacter == 'v'){
+      offset2 -= .5;
+      Serial.print("offset2 is ");
+      Serial.println(offset2);
+
     }
 
 
@@ -189,7 +213,7 @@ void loop() {
 
   
 
-  current_direction = left;
+  current_direction = forward;
   choose_direction_and_move();
   
 

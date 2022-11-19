@@ -56,7 +56,7 @@ void motor_move(){
         if(gyro_PID_out >= 0){ 
             // this would mean the robot is leaning left, speed left wheel up and right wheel down
             // we need motor 1 to go counter-clockwise and motor 3 to go clockwise
-            control_move_forward(whlpair1_micro_p_in_max + gyro_PID_out, whlpair1_micro_p_in_min + gyro_PID_out);
+            control_move_forward(whlpair1_micro_p_in_max + gyro_PID_out, whlpair1_micro_p_in_min + gyro_PID_out); // maybe add small positive offset to right wheel
 
         }else{
             // this would mean the robot is leaning right, speed right wheel up and left wheel down

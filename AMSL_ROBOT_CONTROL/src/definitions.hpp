@@ -40,6 +40,7 @@ extern unsigned long gyro_PID_loop_timer;
 extern float gyro_degrees;
 extern float find_mean;
 extern float find_mean_counter;
+extern float gyro_read_offset;
 
 extern float gyro_degrees;      
 extern float gyro_degrees2;                         
@@ -65,11 +66,12 @@ extern unsigned long current_time;
 extern int p_in;
 extern int micros_p_in;
 extern int no_move_p_in; // no movement
-extern int whlpair1_micro_p_in_max; // to move wheel forward
-extern int whlpair2_micro_p_in_max; // to move wheel backward
-extern int whlpair1_micro_p_in_min; // to move wheel forward
-extern int whlpair2_micro_p_in_min; // to move wheel backward
-
+extern float whlpair1_micro_p_in_max; // to move wheel forward
+extern float whlpair2_micro_p_in_max; // to move wheel backward
+extern float whlpair1_micro_p_in_min; // to move wheel forward
+extern float whlpair2_micro_p_in_min; // to move wheel backward
+extern float offset1;
+extern float offset2;
 
 
 

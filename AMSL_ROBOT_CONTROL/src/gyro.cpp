@@ -120,15 +120,15 @@ void BNO005_update_Gyro_values(){
     }
     
     Serial.print("qW: ");
-    Serial.print(new_qW, 4);
+    Serial.print(new_qW - 0.00006104, 8);
     Serial.print(" qX: ");
-    Serial.print(quat.y(), 4);
+    Serial.print(quat.y(), 8);
     Serial.print(" qY: ");
-    Serial.print(quat.x(), 4);
+    Serial.print(quat.x(), 8);
     Serial.print(" qZ: ");
-    Serial.print(quat.z(), 4);
+    Serial.print(quat.z(), 8);
 
-    gyro_degrees = new_qW;
+    gyro_degrees = new_qW - gyro_read_offset; // previously .00012207
     //gyro_degrees = quat.z();
     
 
