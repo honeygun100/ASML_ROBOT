@@ -11,7 +11,7 @@
 
 
 //with bar 1 interpolation and qw make KD 90.5 and KP divider .185 or maybe .10?
-//with bat 1 interpolation and qz try KP divider 1.22 for now, larger gyro_KP_divider makes gyro_PID_KP smaller which makes gyro_PID_P smaller, so more angle to slow down
+//with bat 1 interpolation and qz try KP divider 1.22 for now, larger gyro_KP_divider makes gyro_PID_KP smaller which makes gyro_PID_OUT smaller, so more angle to slow down
 
 //with bar 2 interpolation and qw make KD 90.5 and KP divider .125?
 
