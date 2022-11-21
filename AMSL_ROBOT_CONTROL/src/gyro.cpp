@@ -120,7 +120,7 @@ void BNO005_update_Gyro_values(){
     }
     
     Serial.print("qW: ");
-    Serial.print(new_qW - 0.00006104, 8);
+    Serial.print(new_qW - gyro_read_offset, 8);
     Serial.print(" qX: ");
     Serial.print(quat.y(), 8);
     Serial.print(" qY: ");
@@ -138,7 +138,7 @@ void BNO005_update_Gyro_values(){
 void gyro_PID_loop(){
     
     //ERROR
-    gyro_PID_error = gyro_degrees; // If this is positive then it is leaning left and left wheel speed up
+    gyro_PID_error = gyro_degrees - gyro_desired; // If this is positive then it is leaning left and left wheel speed up
 
     //PROPORTIONAL
     gyro_PID_P = gyro_PID_error * gyro_PID_KP; // error is a decimal and KP is max vaue.

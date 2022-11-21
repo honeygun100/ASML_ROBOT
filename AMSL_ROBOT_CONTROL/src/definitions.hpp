@@ -31,6 +31,8 @@ void move_forward(float leftwheel_p_in, float rightwheel_p_in);
 void move_backward(float leftwheel_p_in, float rightwheel_p_in);
 void move_left(float frontwheel_p_in, float backwheel_p_in);
 void move_right(float frontwheel_p_in, float backwheel_p_in);
+float bound_check(float checker);
+
 
 //GYRO PID LOOP VARIABLES
 extern Adafruit_BNO055 bno;
@@ -55,6 +57,7 @@ extern float gyro_PID_KI;
 extern float gyro_PID_KD; 
 extern float gyro_PID_out; 
 extern bool gyro_foward_flag; 
+extern float gyro_desired;
 
 
 //MOTOR Variables
