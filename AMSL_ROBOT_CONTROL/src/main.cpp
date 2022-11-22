@@ -122,8 +122,6 @@ void setup() {
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
   
-
-  current_direction = forward;
   delay(1000);
 }
 
@@ -213,7 +211,7 @@ void loop() {
   }		
 
   
-  current_direction = forward;
+  current_direction = right;
   choose_direction_and_move();
   
 
