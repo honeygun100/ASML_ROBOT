@@ -56,13 +56,16 @@ void motor_move(){
         if(gyro_PID_out >= 0){ 
             // this would mean the robot is leaning left, speed left wheel up and right wheel down
             // we need motor 1 to go counter-clockwise and motor 3 to go clockwise
-            control_move_forward(constrain(whlpair1_micro_p_in_max + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max), constrain(whlpair1_micro_p_in_min + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // maybe add small positive offset to right wheel
-
+            control_move_forward(constrain(whlpair1_micro_p_in_max, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max), constrain(whlpair1_micro_p_in_min + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // maybe add small positive offset to right wheel
+            myservo2.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // front wheel
+            myservo4.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // back wheel
         }else{
             // this would mean the robot is leaning right, speed right wheel up and left wheel down
             // we need motor 1 to go counter-clockwise and motor 3 to go clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_forward(constrain(whlpair1_micro_p_in_max - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max), constrain(whlpair1_micro_p_in_min - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max));
+            control_move_forward(constrain(whlpair1_micro_p_in_max - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max), constrain(whlpair1_micro_p_in_min, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max));
+            myservo2.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // front wheel
+            myservo4.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // back wheel        
         }
 
     }else if(current_direction == backward){

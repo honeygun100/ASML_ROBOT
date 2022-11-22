@@ -28,7 +28,7 @@ float whlpair1_micro_p_in_max = 1.628 * 1000; // to move wheel forward, wheel 1 
 float whlpair2_micro_p_in_max = 1.628 * 1000; // to move wheel backward, wheel 1 and 3 1.628
 float whlpair1_micro_p_in_min = 1.373 * 1000; // to move wheel forward, wheel 2 and 4 1.373 
 float whlpair2_micro_p_in_min = 1.373 * 1000; // to move wheel backward, wheel 2 and 4 1.373
-float offset1 = 0.00; // maybe 50.00
+float offset1 = 0.00055000; // this is to fix the Rz of the coordiante plane
 float offset2 = 0.00;
 
 
@@ -39,23 +39,23 @@ unsigned long gyro_update_loop_timer = 0;
 unsigned long gyro_PID_loop_timer = 0;
 float find_mean = 0.00;
 float find_mean_counter = 0.00;
-float gyro_read_offset = 0.00006104;
+float gyro_read_offset = 0.00006104 + 0.00006103;
 
 float gyro_degrees = 0.00; // extern     
 float gyro_degrees2 = 0.00; // extern
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
-float gyro_desired = 0.00; // extern
+float gyro_desired = offset1; // extern
 
 float gyro_PID_P = 0.00; // extern
 float gyro_PID_I = 0.00; // extern
 float gyro_PID_D = 0.00; // extern 
 
-float gyro_KP_divider = .185; // extern 
+float gyro_KP_divider = .123; // extern .123 at 11.5 volts
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
-float gyro_PID_KI = 0.00; // extern
-float gyro_PID_KD = 90.50; // extern
-float gyro_PID_out = 0.00; // extern
+float gyro_PID_KI = 0.000; // extern .0174
+float gyro_PID_KD = 00.00; // extern
+float gyro_PID_out = 00.00; // extern
 
 bool gyro_foward_flag = true; // extern NOT USED
 
@@ -154,27 +154,27 @@ void loop() {
       Serial.print("  ");
       Serial.println(micros_p_in);
     }else if(incomingCharacter == '3'){
-      gyro_KP_divider += .005;
+      gyro_KP_divider += .001;
       Serial.print("kp_divider is ");
-      Serial.print(gyro_KP_divider,4);
+      Serial.print(gyro_KP_divider,5);
       gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
       Serial.print("\tkp is ");
-      Serial.println(gyro_PID_KP);
+      Serial.println(gyro_PID_KP,5);
     }else if(incomingCharacter == '4'){
-      gyro_KP_divider -= .005;
+      gyro_KP_divider -= .001;
       Serial.print("kp_divider is ");
-      Serial.print(gyro_KP_divider,4);
+      Serial.print(gyro_KP_divider,5);
       gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
       Serial.print("\tkp is ");
-      Serial.println(gyro_PID_KP);
+      Serial.println(gyro_PID_KP,5);
     }else if(incomingCharacter == '5'){
-      gyro_PID_KI += .5;
+      gyro_PID_KI += .0001;
       Serial.print("gyro_PID_KI is ");
-      Serial.println(gyro_PID_KI);
+      Serial.println(gyro_PID_KI,5);
     }else if(incomingCharacter == '6'){
-      gyro_PID_KI -= .5;
+      gyro_PID_KI -= .0001;
       Serial.print("gyro_PID_KI is ");
-      Serial.println(gyro_PID_KI);
+      Serial.println(gyro_PID_KI,5);
     }else if(incomingCharacter == '7'){
       gyro_PID_KD += .5;
       Serial.print("gyro_PID_KD is ");
@@ -213,7 +213,6 @@ void loop() {
   }		
 
   
-
   current_direction = forward;
   choose_direction_and_move();
   
@@ -224,11 +223,11 @@ void loop() {
 
   //motor test code
   //analogWrite(motor1_pin_servo_lib, p_in);
-  //myservo1.writeMicroseconds(whlpair1_micro_p_in_max); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
+  //myservo1.writeMicroseconds(whlpair1_micro_p_in_min); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
                                            //                                                   1.373 * 1000 for motor one to move backward clockwise
-  //myservo2.writeMicroseconds(micros_p_in); // front wheel
+  //myservo2.writeMicroseconds(whlpair1_micro_p_in_min); // front wheel
   //myservo3.writeMicroseconds(whlpair1_micro_p_in_min); // right wheel
-  //myservo4.writeMicroseconds(micros_p_in); // back wheel
+  //myservo4.writeMicroseconds(whlpair1_micro_p_in_min); // back wheel
   Serial.println("");
 
 }

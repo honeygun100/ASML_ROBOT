@@ -160,30 +160,6 @@ void gyro_PID_loop(){
     Serial.print(gyro_PID_out);
 
 
-    /*
-    if(gyro_foward_flag == true){
-        if(gyro_PID_out >= 0){
-
-            //twinky_one_speed = twinky_max + gyro_PID_out/2;
-            //twinky_two_speed = twinky_max - gyro_PID_out/2;
-
-        }else{
-            //twinky_one_speed = twinky_max - (-1.00 * gyro_PID_out)/2; 
-            //twinky_two_speed = twinky_max + (-1.00 * gyro_PID_out)/2; 
-            
-        }
-    }else{
-        if(gyro_PID_out >= 0){
-            //twinky_one_speed = -1.00*(twinky_max - gyro_PID_out/2); 
-            //twinky_two_speed = -1.00*(twinky_max + gyro_PID_out/2); 
-
-        }else{
-            //twinky_one_speed = -1.00*(twinky_max + (-1.00*gyro_PID_out)/2);
-            //twinky_two_speed = -1.00*(twinky_max - (-1.00*gyro_PID_out)/2);
-
-        }
-    }
-    */
 }
 
 
