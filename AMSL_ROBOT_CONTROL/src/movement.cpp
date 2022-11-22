@@ -56,14 +56,14 @@ void motor_move(){
         if(gyro_PID_out >= 0){ 
             // this would mean the robot is leaning left, speed left wheel up and right wheel down
             // we need motor 1 to go counter-clockwise and motor 3 to go clockwise
-            control_move_forward(constrain(whlpair1_micro_p_in_max, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max), constrain(whlpair1_micro_p_in_min + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // maybe add small positive offset to right wheel
+            control_move_forward(whlpair1_micro_p_in_max, constrain(whlpair1_micro_p_in_min + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // maybe add small positive offset to right wheel
             myservo2.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // front wheel
             myservo4.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // back wheel
         }else{
             // this would mean the robot is leaning right, speed right wheel up and left wheel down
             // we need motor 1 to go counter-clockwise and motor 3 to go clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_forward(constrain(whlpair1_micro_p_in_max - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max), constrain(whlpair1_micro_p_in_min, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max));
+            control_move_forward(constrain(whlpair1_micro_p_in_max - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max), whlpair1_micro_p_in_min);
             myservo2.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // front wheel
             myservo4.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // back wheel        
         }
@@ -72,12 +72,16 @@ void motor_move(){
         if(gyro_PID_out >= 0){ 
             // this would mean the robot is leaning left, speed right wheel up and left wheel down
             // we need motor 1 to go clockwise and motor 3 to go counter-clockwise
-            control_move_backward(whlpair1_micro_p_in_min + gyro_PID_out, whlpair1_micro_p_in_max + gyro_PID_out);
+            control_move_backward(constrain(whlpair1_micro_p_in_min + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max), whlpair1_micro_p_in_max);
+            myservo2.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // front wheel
+            myservo4.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // back wheel
         }else{
             // this would mean the robot is leaning right, speed right wheel down and left wheel up
             // we need motor 1 to go clockwise and motor 3 to go counter-clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_backward(whlpair1_micro_p_in_min - gyro_PID_out, whlpair1_micro_p_in_max - gyro_PID_out);
+            control_move_backward(whlpair1_micro_p_in_min, constrain(whlpair1_micro_p_in_max - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max));
+            myservo2.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // front wheel
+            myservo4.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair1_micro_p_in_min, whlpair1_micro_p_in_max)); // back wheel
         }
 
 
@@ -85,24 +89,32 @@ void motor_move(){
         if(gyro_PID_out >= 0){ 
             // this would mean the robot is leaning left, speed front wheel down and back wheel up
             // we need motor 2 to go clockwise and motor 4 to go counter-clockwise
-            control_move_left(whlpair2_micro_p_in_min + gyro_PID_out, whlpair2_micro_p_in_max + gyro_PID_out);
+            control_move_left(constrain(whlpair2_micro_p_in_min + gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max), whlpair2_micro_p_in_max);
+            myservo1.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max)); // left wheel
+            myservo3.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max)); // right wheel
         }else{
             // this would mean the robot is leaning right, speed front wheel up and back wheel down
             // we need motor 2 to go clockwise and motor 4 to go counter-clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_left(whlpair2_micro_p_in_min - gyro_PID_out, whlpair2_micro_p_in_max - gyro_PID_out);
+            control_move_left(whlpair2_micro_p_in_min, constrain(whlpair2_micro_p_in_max - gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max));
+            myservo1.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max)); // left wheel
+            myservo3.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max)); // right wheel
         }
 
     }else if(current_direction == right){
         if(gyro_PID_out >= 0){ 
             // this would mean the robot is leaning left, speed front wheel up and back wheel down
             // we need motor 2 to go counter-clockwise and motor 4 to go clockwise
-            control_move_right(whlpair2_micro_p_in_max + gyro_PID_out, whlpair2_micro_p_in_min + gyro_PID_out);
+            control_move_right(whlpair2_micro_p_in_max, constrain(whlpair2_micro_p_in_min + gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max));
+            myservo1.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max)); // left wheel
+            myservo3.writeMicroseconds(constrain(micros_p_in + gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max)); // right wheel
         }else{
             // this would mean the robot is leaning right, speed front wheel down and back wheel up
             // we need motor 2 to go counter-clockwise and motor 4 to go clockwise
             gyro_PID_out = gyro_PID_out * (-1.00);
-            control_move_right(whlpair2_micro_p_in_max - gyro_PID_out, whlpair2_micro_p_in_min - gyro_PID_out);
+            control_move_right(constrain(whlpair2_micro_p_in_max - gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max), whlpair2_micro_p_in_min);
+            myservo1.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max)); // left wheel
+            myservo3.writeMicroseconds(constrain(micros_p_in - gyro_PID_out, whlpair2_micro_p_in_min, whlpair2_micro_p_in_max)); // right wheel
         }
 
     }else{
@@ -131,8 +143,8 @@ float bound_check(float checker){
 
 void control_move_forward(float leftwheel_p_in, float rightwheel_p_in){
     //turn off not needed wheels
-    myservo2.writeMicroseconds(no_move_p_in); // front wheel
-    myservo4.writeMicroseconds(no_move_p_in); // back wheel
+    //myservo2.writeMicroseconds(no_move_p_in); // front wheel
+    //myservo4.writeMicroseconds(no_move_p_in); // back wheel
     //turn on appropriate wheels
     //leftwheel_p_in = bound_check(leftwheel_p_in);
     //rightwheel_p_in = bound_check(rightwheel_p_in);
@@ -142,8 +154,8 @@ void control_move_forward(float leftwheel_p_in, float rightwheel_p_in){
 
 void control_move_backward(float leftwheel_p_in, float rightwheel_p_in){
     //turn off not needed wheels
-    myservo2.writeMicroseconds(no_move_p_in); // front wheel
-    myservo4.writeMicroseconds(no_move_p_in); // back wheel
+    //myservo2.writeMicroseconds(no_move_p_in); // front wheel
+    //myservo4.writeMicroseconds(no_move_p_in); // back wheel
     //turn on appropriate wheels
     //leftwheel_p_in = bound_check(leftwheel_p_in);
     //rightwheel_p_in = bound_check(rightwheel_p_in);
@@ -153,8 +165,8 @@ void control_move_backward(float leftwheel_p_in, float rightwheel_p_in){
 
 void control_move_left(float frontwheel_p_in, float backwheel_p_in){
     //turn off not needed wheels
-    myservo1.writeMicroseconds(no_move_p_in); // left wheel
-    myservo3.writeMicroseconds(no_move_p_in); // right wheel
+    //myservo1.writeMicroseconds(no_move_p_in); // left wheel
+    //myservo3.writeMicroseconds(no_move_p_in); // right wheel
     //turn on appropriate wheels
     //frontwheel_p_in = bound_check(frontwheel_p_in);
     //backwheel_p_in = bound_check(backwheel_p_in);
@@ -164,8 +176,8 @@ void control_move_left(float frontwheel_p_in, float backwheel_p_in){
 
 void control_move_right(float frontwheel_p_in, float backwheel_p_in){
     //turn off not needed wheels
-    myservo1.writeMicroseconds(no_move_p_in); // left wheel
-    myservo3.writeMicroseconds(no_move_p_in); // right wheel
+    //myservo1.writeMicroseconds(no_move_p_in); // left wheel
+    //myservo3.writeMicroseconds(no_move_p_in); // right wheel
     //turn on appropriate wheels
     //frontwheel_p_in = bound_check(frontwheel_p_in);
     //backwheel_p_in = bound_check(backwheel_p_in);

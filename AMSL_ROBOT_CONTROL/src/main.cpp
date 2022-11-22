@@ -28,7 +28,7 @@ float whlpair1_micro_p_in_max = 1.628 * 1000; // to move wheel forward, wheel 1 
 float whlpair2_micro_p_in_max = 1.628 * 1000; // to move wheel backward, wheel 1 and 3 1.628
 float whlpair1_micro_p_in_min = 1.373 * 1000; // to move wheel forward, wheel 2 and 4 1.373 
 float whlpair2_micro_p_in_min = 1.373 * 1000; // to move wheel backward, wheel 2 and 4 1.373
-float offset1 = 0.00055000; // this is to fix the Rz of the coordiante plane
+float offset1 = 0.00056500; // this is to fix the Rz of the coordiante plane
 float offset2 = 0.00;
 
 
@@ -53,8 +53,8 @@ float gyro_PID_D = 0.00; // extern
 
 float gyro_KP_divider = .123; // extern .123 at 11.5 volts
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
-float gyro_PID_KI = 0.000; // extern .0174
-float gyro_PID_KD = 00.00; // extern
+float gyro_PID_KI = 0.00020; // extern .0174
+float gyro_PID_KD = 102.50; // extern
 float gyro_PID_out = 00.00; // extern
 
 bool gyro_foward_flag = true; // extern NOT USED
