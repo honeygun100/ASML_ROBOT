@@ -38,7 +38,14 @@ void MPU_6050_update_Gyro_values(){
     Serial.println(gyro_degrees);
 }
 
+void BNO005_get_standing_error(){
+    int temp_millis = millis();
 
+    while(millis() - temp_millis < 500){
+
+    }
+
+}
 
 void BNO005_update_Gyro_values(){
     
@@ -77,18 +84,6 @@ void BNO005_update_Gyro_values(){
     Serial.print(gyro_degrees2);
     Serial.print("||||||||||||||||");
     */
-    
-
-
-
-
-
-
-
-
-
-
-
 
 
 

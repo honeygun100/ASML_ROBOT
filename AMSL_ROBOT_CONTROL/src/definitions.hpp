@@ -10,6 +10,9 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+#include <avr/io.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
 
 //Logic variables
 extern int end_flag; // low is to end on our side, high is to end on their side
@@ -20,6 +23,7 @@ extern Direciton current_direction;
 void gyro_PID_loop();
 void MPU_6050_update_Gyro_values();
 void BNO005_update_Gyro_values();
+void BNO005_get_standing_error();
 void motor_move();
 void choose_direction_and_move();
 void control_move_forward(float leftwheel_p_in, float rightwheel_p_in);
@@ -32,6 +36,9 @@ void move_backward(float leftwheel_p_in, float rightwheel_p_in);
 void move_left(float frontwheel_p_in, float backwheel_p_in);
 void move_right(float frontwheel_p_in, float backwheel_p_in);
 float bound_check(float checker);
+
+int getColor();
+void init_func();
 
 
 //GYRO PID LOOP VARIABLES
@@ -56,7 +63,8 @@ extern float gyro_PID_KP;
 extern float gyro_PID_KI; 
 extern float gyro_PID_KD; 
 extern float gyro_PID_out; 
-extern bool gyro_foward_flag; 
+extern bool gyro_foward_flag;
+extern float offset1;
 extern float gyro_desired;
 
 
@@ -73,10 +81,23 @@ extern float whlpair1_micro_p_in_max; // to move wheel forward
 extern float whlpair2_micro_p_in_max; // to move wheel backward
 extern float whlpair1_micro_p_in_min; // to move wheel forward
 extern float whlpair2_micro_p_in_min; // to move wheel backward
-extern float offset1;
 extern float offset2;
 
-
+//COLOR SENSOR Variables
+extern int period;
+extern int color1;
+extern int low_bound;
+extern int high_bound;
+extern int color;
+extern int opp;
+extern int curr;
+extern int black;
+extern int blue;
+extern int yellow;
+ 
+extern int yellowBound[2]; //100
+extern int blueBound[2]; //450
+extern int blackBound[2]; //700
 
 
 
