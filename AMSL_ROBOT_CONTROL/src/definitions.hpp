@@ -40,6 +40,8 @@ float bound_check(float checker);
 int getColor();
 void init_func();
 
+void release();
+void clamp();
 
 //GYRO PID LOOP VARIABLES
 extern Adafruit_BNO055 bno;
@@ -66,6 +68,7 @@ extern float gyro_PID_out;
 extern bool gyro_foward_flag;
 extern float offset1;
 extern float gyro_desired;
+extern int print_gyro_values;
 
 
 //MOTOR Variables
@@ -99,6 +102,10 @@ extern int yellowBound[2]; //100
 extern int blueBound[2]; //450
 extern int blackBound[2]; //700
 
-
+//Lever variables
+extern Servo lever_servo;
+extern unsigned long release_timer;
+extern unsigned long clamp_timer;
+extern int lever_action_state;
 
 #endif

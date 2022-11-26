@@ -56,7 +56,7 @@ float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
 float gyro_PID_KI = 0.00020; // extern .0174
 float gyro_PID_KD = 102.50; // extern
 float gyro_PID_out = 00.00; // extern
-
+int print_gyro_values;
 bool gyro_foward_flag = true; // extern NOT USED
 
 //Logic variables
@@ -79,6 +79,14 @@ int yellow;
 int yellowBound[2] = {0, 250}; //100
 int blueBound[2] = {250, 600}; //450
 int blackBound[2] = {600, 800}; //700
+
+//lever servo Variables
+Servo lever_servo; 
+unsigned long release_timer = 0;
+unsigned long clamp_timer = 0;
+int lever_action_state= 0;
+
+
 // Interrupts for color sensor
 ISR(PCINT0_vect)
  
@@ -101,6 +109,7 @@ void setup() {
   Serial.begin(9600);
 
   //Servo set up
+  lever_servo.attach(8); // 8 prob wont work we need to use 10 
   myservo1.attach(motor1_pin_servo_lib);
   myservo2.attach(motor2_pin_servo_lib);
   myservo3.attach(motor3_pin_servo_lib);
@@ -152,7 +161,7 @@ void setup() {
   delay(1050);
 
 
-  // // Color sensor
+  // // Color sensor; should this be here or in color_sensor file as function and call in loop()
   // sei();
   // PCICR = 0b00000001;  // enable PCINT0 as interrupt
   // PCMSK0 = 0b00000001; // enable PCINT0
@@ -172,10 +181,11 @@ void setup() {
 void loop() {
   // call functions to initialize
   init_func();
- 
   period = getColor(); // get the 1st color
-  BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
   int print_colors = 0;
+
+  BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
+  print_gyro_values = 0;
   
 
   
@@ -268,13 +278,10 @@ void loop() {
         Serial.println(offset2);
 
       }
+    }	
 
 
-
-
-      
-    }		
-
+  
     
     current_direction = forward;
     choose_direction_and_move();

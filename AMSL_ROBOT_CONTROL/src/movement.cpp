@@ -15,7 +15,7 @@ void choose_direction_and_move(){
     
     /*
     current_time = millis();
-    if(current_time - gyro_update_loop_timer > 1000){ //100hz
+    if(current_time - gyro_update_loop_timer > 10){ //100hz
         BNO005_update_Gyro_values(); 
         gyro_update_loop_timer = current_time;
     }
@@ -33,9 +33,6 @@ void choose_direction_and_move(){
 
     //go to wheel and write pwm wave depending on direciton
     motor_move();
-
-
-
 
 
 

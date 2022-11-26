@@ -2,7 +2,6 @@
 ///////////// Init /////////////
 void init_func()
 {
- 
     // Color sensor
     sei();
     PCICR = 0b00000001;  // enable PCINT0 as interrupt
@@ -28,7 +27,7 @@ int getColor()
       opp = 1;
     }
 // Pick new bounds if opposite is set to 1
-    if ((opp = 1))
+    if ((opp = 1)) 
     {
  
       if ((period > yellowBound[0]) && (period < yellowBound[1])) // if yellow
