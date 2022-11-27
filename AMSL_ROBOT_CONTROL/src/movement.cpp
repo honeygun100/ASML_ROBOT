@@ -146,7 +146,8 @@ void control_move_forward(float leftwheel_p_in, float rightwheel_p_in){
     //leftwheel_p_in = bound_check(leftwheel_p_in);
     //rightwheel_p_in = bound_check(rightwheel_p_in);
     myservo1.writeMicroseconds(leftwheel_p_in); // left wheel
-    myservo3.writeMicroseconds(rightwheel_p_in); // right wheel
+    myservo3.writeMicroseconds(rightwheel_p_in); // right 
+    //Serial.print("this is being called");
 }
 
 void control_move_backward(float leftwheel_p_in, float rightwheel_p_in){

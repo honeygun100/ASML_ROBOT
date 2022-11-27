@@ -44,7 +44,7 @@ float gyro_degrees = 0.00; // extern
 float gyro_degrees2 = 0.00; // extern
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
-float offset1 = 0.00056500; // this is to fix the Rz of the coordiante plane
+float offset1 = 0.00055000; // this is to fix the Rz of the coordiante plane
 float gyro_desired = offset1; // extern
 
 float gyro_PID_P = 0.00; // extern
@@ -53,8 +53,8 @@ float gyro_PID_D = 0.00; // extern
 
 float gyro_KP_divider = .123; // extern .123 at 11.5 volts
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
-float gyro_PID_KI = 0.00020; // extern .0174
-float gyro_PID_KD = 102.50; // extern
+float gyro_PID_KI = 0.00; // extern .00020 at 11.5 volts
+float gyro_PID_KD = 00.00; // extern 102.50 at 11.5 volts
 float gyro_PID_out = 00.00; // extern
 int print_gyro_values;
 bool gyro_foward_flag = true; // extern NOT USED
@@ -160,7 +160,7 @@ void setup() {
   
   delay(1050);
 
-
+  //THIS MESSES WITH MOTOR CODE
   // // Color sensor; should this be here or in color_sensor file as function and call in loop()
   // sei();
   // PCICR = 0b00000001;  // enable PCINT0 as interrupt
@@ -180,15 +180,16 @@ void setup() {
 
 void loop() {
   // call functions to initialize
-  init_func();
-  period = getColor(); // get the 1st color
+  //THIS MESSES WITH MOTOR CODE
+  //init_func();
+  //period = getColor(); // get the 1st color
   int print_colors = 0;
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
-  print_gyro_values = 0;
+  print_gyro_values = 1;
   
-
-  
+  gyro_update_loop_timer = millis();
+  gyro_PID_loop_timer = millis();
   while(1){
     // Use Serial to test inputs to motors and speeds/calibrate motors
     if(print_colors == 1){
@@ -283,8 +284,8 @@ void loop() {
 
   
     
-    current_direction = forward;
-    choose_direction_and_move();
+    //current_direction = forward;
+    //choose_direction_and_move();
     
 
 
@@ -293,15 +294,15 @@ void loop() {
 
     //motor test code
     //analogWrite(motor1_pin_servo_lib, p_in);
-    //myservo1.writeMicroseconds(whlpair1_micro_p_in_min); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
+    myservo1.writeMicroseconds(micros_p_in); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
                                             //                                                   1.373 * 1000 for motor one to move backward clockwise
-    //myservo2.writeMicroseconds(whlpair1_micro_p_in_min); // front wheel
-    //myservo3.writeMicroseconds(whlpair1_micro_p_in_min); // right wheel
-    //myservo4.writeMicroseconds(whlpair1_micro_p_in_min); // back wheel
+    myservo2.writeMicroseconds(micros_p_in); // front wheel
+    myservo3.writeMicroseconds(micros_p_in); // right wheel
+    myservo4.writeMicroseconds(micros_p_in); // back wheel
     Serial.println("");
   }
 
-
+  Serial.println("");
 }
 
 
