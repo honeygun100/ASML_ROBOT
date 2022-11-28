@@ -158,7 +158,7 @@ void setup() {
 
 void loop() {
   // call functions to initialize
-  int test_flag = 0;
+  //int test_flag = 0;
   int task = 1;
   
 
