@@ -54,8 +54,10 @@ void BNO005_get_standing_error(){
     }
 
     gyro_read_offset = new_qW;
-    Serial.print("initial standing error gyro_read_offset is: ");
-    Serial.print(gyro_read_offset,8);
+    if(print_gyro_values == 1){
+        Serial.print("initial standing error gyro_read_offset is: ");
+        Serial.print(gyro_read_offset,8);
+    }
 }
 
 void BNO005_update_Gyro_values(){
@@ -83,8 +85,10 @@ void BNO005_update_Gyro_values(){
 
 
     gyro_degrees = new_qW - gyro_read_offset; // previously .00012207
-    Serial.print("   gyro_degrees: ");
-    Serial.print(gyro_degrees, 8);
+    if(print_gyro_values == 1){
+        Serial.print("   gyro_degrees: ");
+        Serial.print(gyro_degrees, 8);
+    }
     //gyro_degrees = quat.z();
 }
 
@@ -110,8 +114,10 @@ void gyro_PID_loop(){
     gyro_PID_out = gyro_PID_P + gyro_PID_I + gyro_PID_D; 
     //if(gyro_PID_out > whlpair1_micro_p_in_max) gyro_PID_out = whlpair1_micro_p_in_max;
     //if(gyro_PID_out < whlpair1_micro_p_in_min) gyro_PID_out = whlpair1_micro_p_in_min;
-    Serial.print("  gyro_PID_out: ");
-    Serial.print(gyro_PID_out);
+    if(print_gyro_values == 1){
+        Serial.print("  gyro_PID_out: ");
+        Serial.print(gyro_PID_out);
+    }
 
 
 }

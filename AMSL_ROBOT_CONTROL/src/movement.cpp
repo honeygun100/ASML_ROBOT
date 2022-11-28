@@ -26,7 +26,7 @@ void choose_direction_and_move(){
     //MPU_6050_update_Gyro_values();
 
     //GYRO_PID_LOOP
-    if(current_time - gyro_PID_loop_timer > 20){ //50hz
+    if(current_time - gyro_PID_loop_timer > .00000000005){ //50hz  20 
         gyro_PID_loop();
         gyro_PID_loop_timer = current_time;
     }
@@ -147,6 +147,9 @@ void control_move_forward(float leftwheel_p_in, float rightwheel_p_in){
     //rightwheel_p_in = bound_check(rightwheel_p_in);
     myservo1.writeMicroseconds(leftwheel_p_in); // left wheel
     myservo3.writeMicroseconds(rightwheel_p_in); // right 
+    //Serial.print(leftwheel_p_in);
+    //Serial.print("\t");
+    //Serial.print(rightwheel_p_in);
     //Serial.print("this is being called");
 }
 
@@ -226,4 +229,11 @@ void move_right(float frontwheel_p_in, float backwheel_p_in){
     //turn on appropriate wheels
     myservo2.writeMicroseconds(frontwheel_p_in); // front wheel
     myservo4.writeMicroseconds(backwheel_p_in); // back wheel
+}
+
+void stop_all_wheels(){
+    myservo1.writeMicroseconds(micros_p_in); // left wheel
+    myservo3.writeMicroseconds(micros_p_in); // right wheel
+    myservo2.writeMicroseconds(micros_p_in); // front wheel
+    myservo4.writeMicroseconds(micros_p_in); // back wheel
 }

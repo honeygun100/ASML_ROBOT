@@ -8,14 +8,14 @@
 
 void release()
 {
-  int releasepos = 170;
+  int releasepos = 20;
   lever_servo.write(releasepos);
   //delay(5000);
 }
 
 void clamp()
 {
-  int clamppos = 5;
+  int clamppos = 180;
   lever_servo.write(clamppos);
   //delay(5000);
 }

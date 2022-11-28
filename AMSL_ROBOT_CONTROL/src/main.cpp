@@ -1,10 +1,7 @@
 #include "definitions.hpp"
 //THIS COMMIT IS BEGGNINGING OF THE MERGING
 
-#define motor1_pin_servo_lib 3
-#define motor2_pin_servo_lib 5
-#define motor3_pin_servo_lib 6
-#define motor4_pin_servo_lib 9
+
 //bar 1 interp 1.628 and 1.373 
 //bar 2 interp 1.588 and 1.413
 
@@ -44,17 +41,17 @@ float gyro_degrees = 0.00; // extern
 float gyro_degrees2 = 0.00; // extern
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
-float offset1 = 0.00055000; // this is to fix the Rz of the coordiante plane
+float offset1 = 0.00056700; // this is to fix the Rz of the coordiante plane
 float gyro_desired = offset1; // extern
 
 float gyro_PID_P = 0.00; // extern
 float gyro_PID_I = 0.00; // extern
 float gyro_PID_D = 0.00; // extern 
 
-float gyro_KP_divider = .123; // extern .123 at 11.5 volts
+float gyro_KP_divider = .138; // extern .123 at 11.5 volts .138
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
-float gyro_PID_KI = 0.00; // extern .00020 at 11.5 volts
-float gyro_PID_KD = 00.00; // extern 102.50 at 11.5 volts
+float gyro_PID_KI = 0.00010; // extern .00020 at 11.5 volts
+float gyro_PID_KD = 10.00; // extern 102.50 at 11.5 volts
 float gyro_PID_out = 00.00; // extern
 int print_gyro_values;
 bool gyro_foward_flag = true; // extern NOT USED
@@ -62,23 +59,17 @@ bool gyro_foward_flag = true; // extern NOT USED
 //Logic variables
 int end_flag = 0; // low is to end on our side, high is to end on their side
 Direciton current_direction;
-
+home_options home;
 
 //COLOR SENSOR
-int period = 10;
-int color1;
-int low_bound = 0;
-int high_bound = 0;
-int color;
-int opp = 1;
-int curr = 0;
-int black;
-int blue;
-int yellow;
- 
-int yellowBound[2] = {0, 250}; //100
-int blueBound[2] = {250, 600}; //450
-int blackBound[2] = {600, 800}; //700
+int curr_low_bound = 0;
+int curr_high_bound = 0;
+int yellowBound[2] = {0, 200};  // 55
+int blueBound[2] = {200, 500};   // 450
+int blackBound[2] = {500, 1200}; // 800
+States stateFL;
+States stateRB;
+
 
 //lever servo Variables
 Servo lever_servo; 
@@ -87,19 +78,6 @@ unsigned long clamp_timer = 0;
 int lever_action_state= 0;
 
 
-// Interrupts for color sensor
-ISR(PCINT0_vect)
- 
-{
-  if (PINB & 0b00000001)
-  {
-    TCNT1 = 0;
-  }
-  else
-  {
-    period = TCNT1 * 2;
-  }
-}
 
 
 void setup() {
@@ -107,9 +85,10 @@ void setup() {
   //analogWrite(motor1_pin_servo_lib, p_in);
 
   Serial.begin(9600);
+  pinMode(2, INPUT);
 
   //Servo set up
-  lever_servo.attach(8); // 8 prob wont work we need to use 10 
+  lever_servo.attach(11); // 8 prob wont work we need to use 10 
   myservo1.attach(motor1_pin_servo_lib);
   myservo2.attach(motor2_pin_servo_lib);
   myservo3.attach(motor3_pin_servo_lib);
@@ -158,14 +137,13 @@ void setup() {
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
   
+  
   delay(1050);
 
-  //THIS MESSES WITH MOTOR CODE
-  // // Color sensor; should this be here or in color_sensor file as function and call in loop()
-  // sei();
-  // PCICR = 0b00000001;  // enable PCINT0 as interrupt
-  // PCMSK0 = 0b00000001; // enable PCINT0
-  // TCCR1B = 0b00000001; //  timer - is 1
+
+  // color sensor 
+  pinMode(sensorFL, INPUT);
+  pinMode(sensorRB, INPUT);
 }
 
 
@@ -180,37 +158,74 @@ void setup() {
 
 void loop() {
   // call functions to initialize
-  //THIS MESSES WITH MOTOR CODE
-  //init_func();
-  //period = getColor(); // get the 1st color
-  int print_colors = 0;
+  int test_flag = 0;
+  int task = 1;
+  
+
+  int print_colors = 1;
+
+  getColor();
+  if(stateFL.blue == 1){
+    home = blue;
+  }else{
+    home = yellow;
+  }
+
+  
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
-  print_gyro_values = 1;
+  print_gyro_values = 0;
   
+  //DURING THE 5 SECONDS EMILE NEEDS TO HOLD THE STRING
+  release();
+  
+  
+
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
+  unsigned long delay_timer = millis();
   while(1){
     // Use Serial to test inputs to motors and speeds/calibrate motors
+    getColor();
     if(print_colors == 1){
-      period = getColor();
+      Serial.print("FL:   | ");
       Serial.print("Curr: ");
-      Serial.print(curr);
+      Serial.print(stateFL.curr);
       Serial.print(" | ");
       Serial.print("Opp: ");
-      Serial.print(opp);
+      Serial.print(stateFL.opp);
       Serial.print(" | ");
       Serial.print("Blue: ");
-      Serial.print(blue);
+      Serial.print(stateFL.blue);
       Serial.print(" | ");
       Serial.print("Yellow: ");
-      Serial.print(yellow);
+      Serial.print(stateFL.yellow);
       Serial.print(" | ");
       Serial.print("Black: ");
-      Serial.print(black);
+      Serial.print(stateFL.black);
       Serial.print(" | ");
       Serial.print("Period: ");
-      Serial.print(period);
+      Serial.print(stateFL.period);
+      Serial.print(" | ");
+      Serial.print("------- RB:   | ");
+      Serial.print("Curr: ");
+      Serial.print(stateRB.curr);
+      Serial.print(" | ");
+      Serial.print("Opp: ");
+      Serial.print(stateRB.opp);
+      Serial.print(" | ");
+      Serial.print("Blue: ");
+      Serial.print(stateRB.blue);
+      Serial.print(" | ");
+      Serial.print("Yellow: ");
+      Serial.print(stateRB.yellow);
+      Serial.print(" | ");
+      Serial.print("Black: ");
+      Serial.print(stateRB.black);
+      Serial.print(" | ");
+      Serial.print("Period: ");
+      Serial.print(stateRB.period);
+      Serial.print(" | ");
     }
 
     if(Serial.available()){
@@ -259,12 +274,12 @@ void loop() {
         Serial.println(gyro_PID_KD);
 
       }else if(incomingCharacter == 'z'){
-        offset1 += .5;
+        offset1 += .0000010;
         Serial.print("offset1 is ");
         Serial.println(offset1);
 
       }else if(incomingCharacter == 'x'){
-        offset1 -= .5;
+        offset1 -= .0000010;
         Serial.print("offset1 is ");
         Serial.println(offset1);
 
@@ -282,23 +297,260 @@ void loop() {
     }	
 
 
-  
+   
+
     
-    //current_direction = forward;
-    //choose_direction_and_move();
-    
+    if(digitalRead(2) == HIGH){
+      if(task == 1){
+        current_direction = forward;
+        choose_direction_and_move();
+        
+        if(home == yellow){
+          if(stateFL.blue == 1 && stateRB.blue == 1){
+            task = 2;
+          }
+        }else{
+          if(stateFL.yellow == 1 && stateRB.yellow == 1){
+            task = 2;
+          }
+        }
+      }
+
+      
+      if(task == 2){
+        current_direction = right;
+        choose_direction_and_move();
+        
+        if(stateRB.black == 1){
+          task = 3;
+        }
+      }
+
+      if(task == 3){
+        current_direction = left;
+        choose_direction_and_move();
+        
+        if(home == yellow){
+          if(stateRB.blue == 1){
+            task = 4;
+          }
+        }else{
+          if(stateRB.yellow == 1){
+            task = 4;
+          }
+        }
+      }
+
+      if(task == 4){
+        current_direction = backward;
+        choose_direction_and_move();
+        
+        if(home == yellow){
+          if(stateFL.yellow == 1 && stateRB.yellow == 1){
+            task = 5;
+          }
+        }else{
+          if(stateFL.blue == 1 && stateRB.blue == 1){
+            task = 5;
+          }
+        }
+      }
+
+      if(task == 5){
+        current_direction = left;
+        choose_direction_and_move();
+        
+        if(stateFL.black == 1){
+          task = 6;
+        }
+      }
+
+      if(task == 6){
+        current_direction = right;
+        choose_direction_and_move();
+        
+        if(home == yellow){
+          if(stateFL.yellow == 1){
+            task = 7;
+          }
+        }else{
+          if(stateFL.blue == 1){
+            
+            task = 7;
+          }
+        }
+
+        delay_timer = millis();
+        while(millis() - delay_timer < 300){
+          choose_direction_and_move();
+        }
+      }
+
+      if(task == 7){
+        current_direction = backward;
+        choose_direction_and_move();
+        
+        if(stateRB.black == 1){
+          task = 8;
+        }
+      }
+
+      if(task == 8){
+        current_direction = forward;
+        choose_direction_and_move();
+        
+         if(home == yellow){
+          if(stateRB.yellow == 1){
+            delay_timer = millis();
+            while(millis() - delay_timer < 300){
+              choose_direction_and_move();
+            }
+            stop_all_wheels();
+            exit(1);
+          }
+        }else{
+          if(stateRB.blue == 1){
+            delay_timer = millis();
+            while(millis() - delay_timer < 300){
+              choose_direction_and_move();
+            }
+            stop_all_wheels();
+            exit(1);
+          }
+        }
+      }
+    }
 
 
 
 
 
+    if(digitalRead(2) == LOW){
+      if(task == 1){
+        current_direction = forward;
+        choose_direction_and_move();
+        
+        if(home == yellow){
+          if(stateFL.blue == 1 && stateRB.blue == 1){
+            task = 2;
+          }
+        }else{
+          if(stateFL.yellow == 1 && stateRB.yellow == 1){
+            task = 2;
+          }
+        }
+      }
+
+      
+      if(task == 2){
+        current_direction = left;
+        choose_direction_and_move();
+        
+        if(stateFL.black == 1){
+          task = 3;
+        }
+      }
+
+      if(task == 3){
+        current_direction = right;
+        choose_direction_and_move();
+        
+        if(home == yellow){
+          if(stateFL.blue == 1){
+            task = 4;
+          }
+        }else{
+          if(stateFL.yellow == 1){
+            task = 4;
+          }
+        }
+      }
+
+      if(task == 4){
+        current_direction = backward;
+        choose_direction_and_move();
+        
+        if(home == yellow){
+          if(stateFL.yellow == 1 && stateRB.yellow == 1){
+            task = 5;
+          }
+        }else{
+          if(stateFL.blue == 1 && stateRB.blue == 1){
+            task = 5;
+          }
+        }
+      }
+
+      if(task == 5){
+        current_direction = right;
+        choose_direction_and_move();
+        
+        if(stateRB.black == 1){
+          task = 6;
+        }
+      }
+
+      if(task == 6){
+        current_direction = left;
+        choose_direction_and_move();
+        
+        if(home == yellow){
+          if(stateRB.yellow == 1){
+            task = 7;
+          }
+        }else{
+          if(stateRB.blue == 1){
+            
+            task = 7;
+          }
+        }
+        delay_timer = millis();
+        while(millis() - delay_timer < 300){
+          choose_direction_and_move();
+        }
+      }
+
+      if(task == 7){
+        current_direction = backward;
+        choose_direction_and_move();
+        
+        if(stateRB.black == 1){
+          task = 8;
+        }
+      }
+
+      if(task == 8){
+        current_direction = forward;
+        choose_direction_and_move();
+        
+         if(home == yellow){
+          if(stateRB.yellow == 1){
+            delay_timer = millis();
+            while(millis() - delay_timer < 300){
+              choose_direction_and_move();
+            }
+            stop_all_wheels();
+            exit(1);
+          }
+        }else{
+          if(stateRB.blue == 1){
+            delay_timer = millis();
+            while(millis() - delay_timer < 300){
+              choose_direction_and_move();
+            }
+            stop_all_wheels();
+            exit(1);
+          }
+        }
+      }
+    }
     //motor test code
     //analogWrite(motor1_pin_servo_lib, p_in);
-    myservo1.writeMicroseconds(micros_p_in); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
-                                            //                                                   1.373 * 1000 for motor one to move backward clockwise
-    myservo2.writeMicroseconds(micros_p_in); // front wheel
-    myservo3.writeMicroseconds(micros_p_in); // right wheel
-    myservo4.writeMicroseconds(micros_p_in); // back wheel
+    // myservo1.writeMicroseconds(micros_p_in); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
+    //                                         //                                                   1.373 * 1000 for motor one to move backward clockwise
+    // myservo2.writeMicroseconds(micros_p_in); // front wheel
+    // myservo3.writeMicroseconds(micros_p_in); // right wheel
+    // myservo4.writeMicroseconds(micros_p_in); // back wheel
     Serial.println("");
   }
 
