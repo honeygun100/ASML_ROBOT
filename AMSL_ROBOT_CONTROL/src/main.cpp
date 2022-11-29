@@ -11,6 +11,7 @@
 //with bat 1 interpolation and qz try KP divider 1.22 for now, larger gyro_KP_divider makes gyro_PID_KP smaller which makes gyro_PID_OUT smaller, so more angle to slow down
 
 //with bar 2 interpolation and qw make KD 90.5 and KP divider .125?
+char *move_direction = (char*)malloc(5*sizeof(char));
 
 //MOTOR Variables
 Servo myservo1; // Create Servo object to control the servo
@@ -160,7 +161,8 @@ void loop() {
   // call functions to initialize
   //int test_flag = 0;
   int task = 1;
-  
+  int home_task = 1;
+  unsigned long step_delay = 1300;
 
   int print_colors = 1;
 
@@ -184,366 +186,679 @@ void loop() {
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
   unsigned long delay_timer = millis();
+  unsigned long end_game_timer = millis();
+  if(digitalRead(2) == LOW){
+    move_direction[4] = '\0';
+    move_direction[0] = 'r';
+    move_direction[1] = 'i';
+    move_direction[2] = 'g';
+    move_direction[3] = 't';
+  }else{
+    move_direction[4] = '\0';
+    move_direction[0] = 'l';
+    move_direction[1] = 'e';
+    move_direction[2] = 'f';
+    move_direction[3] = 't';
+  }
   while(1){
-    // Use Serial to test inputs to motors and speeds/calibrate motors
-    getColor();
-    if(print_colors == 1){
-      Serial.print("FL:   | ");
-      Serial.print("Curr: ");
-      Serial.print(stateFL.curr);
-      Serial.print(" | ");
-      Serial.print("Opp: ");
-      Serial.print(stateFL.opp);
-      Serial.print(" | ");
-      Serial.print("Blue: ");
-      Serial.print(stateFL.blue);
-      Serial.print(" | ");
-      Serial.print("Yellow: ");
-      Serial.print(stateFL.yellow);
-      Serial.print(" | ");
-      Serial.print("Black: ");
-      Serial.print(stateFL.black);
-      Serial.print(" | ");
-      Serial.print("Period: ");
-      Serial.print(stateFL.period);
-      Serial.print(" | ");
-      Serial.print("------- RB:   | ");
-      Serial.print("Curr: ");
-      Serial.print(stateRB.curr);
-      Serial.print(" | ");
-      Serial.print("Opp: ");
-      Serial.print(stateRB.opp);
-      Serial.print(" | ");
-      Serial.print("Blue: ");
-      Serial.print(stateRB.blue);
-      Serial.print(" | ");
-      Serial.print("Yellow: ");
-      Serial.print(stateRB.yellow);
-      Serial.print(" | ");
-      Serial.print("Black: ");
-      Serial.print(stateRB.black);
-      Serial.print(" | ");
-      Serial.print("Period: ");
-      Serial.print(stateRB.period);
-      Serial.print(" | ");
-    }
-
-    if(Serial.available()){
-      char incomingCharacter = Serial.read();
-      if(incomingCharacter == '1'){ // case one and two are for test code at bottom of void loop()
-        p_in++;
-        micros_p_in++;
-        Serial.print(p_in);
-        Serial.print("  ");
-        Serial.println(micros_p_in);
-      }else if(incomingCharacter == '2'){
-        p_in--;
-        micros_p_in--;
-        Serial.print(p_in);
-        Serial.print("  ");
-        Serial.println(micros_p_in);
-      }else if(incomingCharacter == '3'){
-        gyro_KP_divider += .001;
-        Serial.print("kp_divider is ");
-        Serial.print(gyro_KP_divider,5);
-        gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
-        Serial.print("\tkp is ");
-        Serial.println(gyro_PID_KP,5);
-      }else if(incomingCharacter == '4'){
-        gyro_KP_divider -= .001;
-        Serial.print("kp_divider is ");
-        Serial.print(gyro_KP_divider,5);
-        gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
-        Serial.print("\tkp is ");
-        Serial.println(gyro_PID_KP,5);
-      }else if(incomingCharacter == '5'){
-        gyro_PID_KI += .0001;
-        Serial.print("gyro_PID_KI is ");
-        Serial.println(gyro_PID_KI,5);
-      }else if(incomingCharacter == '6'){
-        gyro_PID_KI -= .0001;
-        Serial.print("gyro_PID_KI is ");
-        Serial.println(gyro_PID_KI,5);
-      }else if(incomingCharacter == '7'){
-        gyro_PID_KD += .5;
-        Serial.print("gyro_PID_KD is ");
-        Serial.println(gyro_PID_KD);
-      }else if(incomingCharacter == '8'){
-        gyro_PID_KD -= .5;
-        Serial.print("gyro_PID_KD is ");
-        Serial.println(gyro_PID_KD);
-
-      }else if(incomingCharacter == 'z'){
-        offset1 += .0000010;
-        Serial.print("offset1 is ");
-        Serial.println(offset1);
-
-      }else if(incomingCharacter == 'x'){
-        offset1 -= .0000010;
-        Serial.print("offset1 is ");
-        Serial.println(offset1);
-
-      }else if(incomingCharacter == 'c'){
-        offset2 += .5;
-        Serial.print("offset2 is ");
-        Serial.println(offset2);
-
-      }else if(incomingCharacter == 'v'){
-        offset2 -= .5;
-        Serial.print("offset2 is ");
-        Serial.println(offset2);
-
+    if(millis() - end_game_timer < 45000){
+      // Use Serial to test inputs to motors and speeds/calibrate motors
+      getColor();
+      if(print_colors == 1){
+        Serial.print("FL:   | ");
+        Serial.print("Curr: ");
+        Serial.print(stateFL.curr);
+        Serial.print(" | ");
+        Serial.print("Opp: ");
+        Serial.print(stateFL.opp);
+        Serial.print(" | ");
+        Serial.print("Blue: ");
+        Serial.print(stateFL.blue);
+        Serial.print(" | ");
+        Serial.print("Yellow: ");
+        Serial.print(stateFL.yellow);
+        Serial.print(" | ");
+        Serial.print("Black: ");
+        Serial.print(stateFL.black);
+        Serial.print(" | ");
+        Serial.print("Period: ");
+        Serial.print(stateFL.period);
+        Serial.print(" | ");
+        Serial.print("------- RB:   | ");
+        Serial.print("Curr: ");
+        Serial.print(stateRB.curr);
+        Serial.print(" | ");
+        Serial.print("Opp: ");
+        Serial.print(stateRB.opp);
+        Serial.print(" | ");
+        Serial.print("Blue: ");
+        Serial.print(stateRB.blue);
+        Serial.print(" | ");
+        Serial.print("Yellow: ");
+        Serial.print(stateRB.yellow);
+        Serial.print(" | ");
+        Serial.print("Black: ");
+        Serial.print(stateRB.black);
+        Serial.print(" | ");
+        Serial.print("Period: ");
+        Serial.print(stateRB.period);
+        Serial.print(" | ");
       }
-    }	
 
+      if(Serial.available()){
+        char incomingCharacter = Serial.read();
+        if(incomingCharacter == '1'){ // case one and two are for test code at bottom of void loop()
+          p_in++;
+          micros_p_in++;
+          Serial.print(p_in);
+          Serial.print("  ");
+          Serial.println(micros_p_in);
+        }else if(incomingCharacter == '2'){
+          p_in--;
+          micros_p_in--;
+          Serial.print(p_in);
+          Serial.print("  ");
+          Serial.println(micros_p_in);
+        }else if(incomingCharacter == '3'){
+          gyro_KP_divider += .001;
+          Serial.print("kp_divider is ");
+          Serial.print(gyro_KP_divider,5);
+          gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
+          Serial.print("\tkp is ");
+          Serial.println(gyro_PID_KP,5);
+        }else if(incomingCharacter == '4'){
+          gyro_KP_divider -= .001;
+          Serial.print("kp_divider is ");
+          Serial.print(gyro_KP_divider,5);
+          gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
+          Serial.print("\tkp is ");
+          Serial.println(gyro_PID_KP,5);
+        }else if(incomingCharacter == '5'){
+          gyro_PID_KI += .0001;
+          Serial.print("gyro_PID_KI is ");
+          Serial.println(gyro_PID_KI,5);
+        }else if(incomingCharacter == '6'){
+          gyro_PID_KI -= .0001;
+          Serial.print("gyro_PID_KI is ");
+          Serial.println(gyro_PID_KI,5);
+        }else if(incomingCharacter == '7'){
+          gyro_PID_KD += .5;
+          Serial.print("gyro_PID_KD is ");
+          Serial.println(gyro_PID_KD);
+        }else if(incomingCharacter == '8'){
+          gyro_PID_KD -= .5;
+          Serial.print("gyro_PID_KD is ");
+          Serial.println(gyro_PID_KD);
 
-   
+        }else if(incomingCharacter == 'z'){
+          offset1 += .0000010;
+          Serial.print("offset1 is ");
+          Serial.println(offset1);
+
+        }else if(incomingCharacter == 'x'){
+          offset1 -= .0000010;
+          Serial.print("offset1 is ");
+          Serial.println(offset1);
+
+        }else if(incomingCharacter == 'c'){
+          offset2 += .5;
+          Serial.print("offset2 is ");
+          Serial.println(offset2);
+
+        }else if(incomingCharacter == 'v'){
+          offset2 -= .5;
+          Serial.print("offset2 is ");
+          Serial.println(offset2);
+
+        }
+      }	
+
 
     
-    if(digitalRead(2) == HIGH){
-      if(task == 1){
-        current_direction = forward;
-        choose_direction_and_move();
-        
-        if(home == yellow){
-          if(stateFL.blue == 1 && stateRB.blue == 1){
-            task = 2;
-          }
-        }else{
-          if(stateFL.yellow == 1 && stateRB.yellow == 1){
-            task = 2;
-          }
-        }
-      }
 
       
-      if(task == 2){
-        current_direction = right;
-        choose_direction_and_move();
+      if(digitalRead(2) == LOW){ // robot is sitting bottom left of board
+        if(task == 1){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 2;
+            }
+          }else{
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 2;
+            }
+          }
+        }
+
         
-        if(stateRB.black == 1){
+        if(task == 2){
+          current_direction = right;
+          if(stateRB.black != 1){
+            delay_timer = millis();
+            getColor();
+            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+          }    
+          
           task = 3;
         }
-      }
 
-      if(task == 3){
-        current_direction = left;
-        choose_direction_and_move();
-        
-        if(home == yellow){
-          if(stateRB.blue == 1){
-            task = 4;
-          }
-        }else{
-          if(stateRB.yellow == 1){
-            task = 4;
+        if(task == 3){
+          current_direction = backward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 4;
+            }
+          }else{
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 4;
+            }
           }
         }
-      }
 
-      if(task == 4){
-        current_direction = backward;
-        choose_direction_and_move();
-        
-        if(home == yellow){
-          if(stateFL.yellow == 1 && stateRB.yellow == 1){
-            task = 5;
-          }
-        }else{
-          if(stateFL.blue == 1 && stateRB.blue == 1){
-            task = 5;
+        if(task == 4){
+          current_direction = right;
+          getColor();
+          if(stateRB.black != 1){
+            delay_timer = millis();
+            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+          }     
+          
+          task = 5;
+        }
+
+        if(task == 5){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 2;
+            }
+          }else{
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 2;
+            }
           }
         }
-      }
 
-      if(task == 5){
-        current_direction = left;
-        choose_direction_and_move();
-        
-        if(stateFL.black == 1){
+        if(stateRB.black == 1 && task < 6 ){
+          move_direction[0] = 'l';
+          move_direction[1] = 'e';
+          move_direction[2] = 'f';
+          move_direction[3] = 't';
           task = 6;
         }
-      }
 
-      if(task == 6){
-        current_direction = right;
-        choose_direction_and_move();
-        
-        if(home == yellow){
-          if(stateFL.yellow == 1){
+        if(task == 6){
+          current_direction = left;
+          choose_direction_and_move();
+          getColor();
+          if(stateRB.black == 0){
             task = 7;
           }
-        }else{
-          if(stateFL.blue == 1){
+        }
+
+        //copied code here
+        if(task == 7){
+          current_direction = backward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 8;
+            }
+          }else{
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 8;
+            }
+          }
+        }
+
+        if(task == 8){
+          current_direction = left;
+          choose_direction_and_move();
+          getColor();
+          if(stateFL.black != 1){
+            delay_timer = millis();
+            while(stateFL.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+          }     
+          
+          task = 9;
+        }
+
+        if(task == 9){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 10;
+            }
+          }else{
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 10;
+            }
+          }
+        }
+        if(task == 10){
+          current_direction = left;
+            getColor();
+            if(stateFL.black != 1){
+              delay_timer = millis();
+              while(stateFL.black != 1 && millis() - delay_timer < step_delay){
+                choose_direction_and_move();
+                getColor();
+              }
+            }     
             
             task = 7;
-          }
         }
 
-        delay_timer = millis();
-        while(millis() - delay_timer < 300){
+        if(stateFL.black == 1 && task < 11){ // this was 10 but should be 11
+          task = 11;
+        }
+
+        if(task == 11){
+          current_direction = right;
           choose_direction_and_move();
+          getColor();
+          if(stateFL.black == 0){
+            delay_timer = millis();
+            while(stateFL.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+            task = 12;
+          }
+            
+        }
+
+        if(task == 12){
+          current_direction = backward;
+          choose_direction_and_move();
+          getColor();
+          if(stateRB.black == 1 ){
+            task = 13;
+          }
+        }
+      
+
+        if(task == 13){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateRB.yellow == 1){
+              delay_timer = millis();
+              while(millis() - delay_timer < 800){
+                choose_direction_and_move();
+              }
+              stop_all_wheels();
+              exit(1);
+            }
+          }else{
+            if(stateRB.blue == 1){
+              delay_timer = millis();
+              while(millis() - delay_timer < 800){
+                choose_direction_and_move();
+              }
+              stop_all_wheels();
+              exit(1);
+            }
+          }
+        }
+        //Serial.println(task);
+      }
+
+      if(digitalRead(2) == HIGH){// robot is sitting bottom right of board
+        if(task == 1){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 2;
+            }
+          }else{
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 2;
+            }
+          }
+        }
+
+        
+        if(task == 2){
+          current_direction = left;
+          if(stateFL.black != 1){
+            delay_timer = millis();
+            getColor();
+            while(stateFL.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+          }    
+          
+          task = 3;
+        }
+
+        if(task == 3){
+          current_direction = backward;
+          choose_direction_and_move();
+          getColor();
+          if(home == yellow){
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 4;
+            }
+          }else{
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 4;
+            }
+          }
+        }
+
+        if(task == 4){
+          current_direction = left;
+          getColor();
+          if(stateFL.black != 1){
+            delay_timer = millis();
+            while(stateFL.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+          }     
+          
+          task = 5;
+        }
+
+        if(task == 5){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 2;
+            }
+          }else{
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 2;
+            }
+          }
+        }
+
+        if(stateFL.black == 1 && task < 6 ){
+          task = 6;
+          move_direction[4] = '\0';
+          move_direction[0] = 'r';
+          move_direction[1] = 'i';
+          move_direction[2] = 'g';
+          move_direction[3] = 't';
+        }
+
+        if(task == 6){
+          current_direction = right;
+          choose_direction_and_move();
+          getColor();
+          if(stateFL.black == 0){
+            task = 7;
+          }
+            
+        }
+
+        //copied code bere
+
+        if(task == 7){
+          current_direction = backward;
+          choose_direction_and_move();
+          getColor();
+          if(home == yellow){
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 8;
+            }
+          }else{
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 8;
+            }
+          }
+        }
+
+        if(task == 8){
+          current_direction = right;
+          getColor();
+          if(stateRB.black != 1){
+            delay_timer = millis();
+            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+          }     
+          
+          task = 9;
+        }
+
+        if(task == 9){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 10;
+            }
+          }else{
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 10;
+            }
+          }
+        }
+
+        if(task == 10){
+          current_direction = right;
+          getColor();
+          if(stateRB.black != 1){
+            delay_timer = millis();
+            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+          }     
+          
+          task = 7;
+        }
+
+        if(stateRB.black == 1 && task < 11 ){
+          task = 11;
+        }
+
+        if(task == 11){
+          current_direction = left;
+          choose_direction_and_move();
+          getColor();
+          if(stateRB.black == 0){
+            delay_timer = millis();
+            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
+              choose_direction_and_move();
+              getColor();
+            }
+            task = 12;
+          }
+        }
+
+        if(task == 12){
+          current_direction = backward;
+          choose_direction_and_move();
+          getColor();
+          if(stateRB.black == 1){
+            task = 13;
+          }
+        }
+
+        if(task == 13){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateRB.yellow == 1){
+              delay_timer = millis();
+              while(millis() - delay_timer < 800){
+                choose_direction_and_move();
+              }
+              stop_all_wheels();
+              exit(1);
+            }
+          }else{
+            if(stateRB.blue == 1){
+              delay_timer = millis();
+              while(millis() - delay_timer < 800){
+                choose_direction_and_move();
+              }
+              stop_all_wheels();
+              exit(1);
+            }
+          }
+        }
+
+      }
+    }else{
+      getColor();
+      
+      if(move_direction[0] == 'r'){
+        if(home_task == 1){
+          current_direction = left;
+          choose_direction_and_move();
+          //getColor();
+          if(stateFL.black == 1){
+            home_task = 2;
+          }     
+        }
+      
+
+        if(home_task == 2){
+          current_direction = right;
+          choose_direction_and_move();
+          
+          if(stateFL.black != 1){
+            home_task = 3;
+          }
+          delay_timer = millis();
+          while(millis() - delay_timer < 300 && stateFL.black != 1){
+            getColor();
+            choose_direction_and_move();
+          }
+        }
+
+        if(home_task == 3){
+          current_direction = backward;
+          choose_direction_and_move();
+          
+          if(stateRB.black == 1){
+            home_task = 4;
+          }
+        }
+
+        if(home_task == 4){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){ // this was home_task before but needs to be home
+            if(stateRB.yellow == 1){
+              delay_timer = millis();
+              while(millis() - delay_timer < 400){
+                choose_direction_and_move();
+              }
+              stop_all_wheels();
+              exit(1);
+            }
+          }else{
+            if(stateRB.blue == 1){
+              delay_timer = millis();
+              while(millis() - delay_timer < 400){
+                choose_direction_and_move();
+              }
+              stop_all_wheels();
+              exit(1);
+            }
+          }
         }
       }
 
-      if(task == 7){
-        current_direction = backward;
-        choose_direction_and_move();
-        
-        if(stateRB.black == 1){
-          task = 8;
+      if(move_direction[0] == 'l'){
+        if(home_task == 1){
+          current_direction = right;
+          choose_direction_and_move();
+          //getColor();
+          if(stateRB.black == 1){
+            home_task = 2;
+          }     
+        }
+      
+
+        if(home_task == 2){
+          current_direction = left;
+          choose_direction_and_move();
+          
+          if(stateRB.black != 1){
+            home_task = 3;
+          }
+          delay_timer = millis();
+          while(millis() - delay_timer < 300 && stateRB.black != 1){
+            getColor();
+            choose_direction_and_move();
+          }
+        }
+
+        if(home_task == 3){
+          current_direction = backward;
+          choose_direction_and_move();
+          
+          if(stateRB.black == 1){
+            home_task = 4;
+          }
+        }
+
+        if(home_task == 4){
+          current_direction = forward;
+          choose_direction_and_move();
+          
+          if(home == yellow){  // this was home_task before but needs to be home
+            if(stateRB.yellow == 1){
+              delay_timer = millis();
+              while(millis() - delay_timer < 400){
+                choose_direction_and_move();
+              }
+              stop_all_wheels();
+              exit(1);
+            }
+          }else{
+            if(stateRB.blue == 1){
+              delay_timer = millis();
+              while(millis() - delay_timer < 400){
+                choose_direction_and_move();
+              }
+              stop_all_wheels();
+              exit(1);
+            }
+          }
         }
       }
 
-      if(task == 8){
-        current_direction = forward;
-        choose_direction_and_move();
-        
-         if(home == yellow){
-          if(stateRB.yellow == 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
-            }
-            stop_all_wheels();
-            exit(1);
-          }
-        }else{
-          if(stateRB.blue == 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
-            }
-            stop_all_wheels();
-            exit(1);
-          }
-        }
-      }
     }
 
 
 
-
-
-    if(digitalRead(2) == LOW){
-      if(task == 1){
-        current_direction = forward;
-        choose_direction_and_move();
-        
-        if(home == yellow){
-          if(stateFL.blue == 1 && stateRB.blue == 1){
-            task = 2;
-          }
-        }else{
-          if(stateFL.yellow == 1 && stateRB.yellow == 1){
-            task = 2;
-          }
-        }
-      }
-
-      
-      if(task == 2){
-        current_direction = left;
-        choose_direction_and_move();
-        
-        if(stateFL.black == 1){
-          task = 3;
-        }
-      }
-
-      if(task == 3){
-        current_direction = right;
-        choose_direction_and_move();
-        
-        if(home == yellow){
-          if(stateFL.blue == 1){
-            task = 4;
-          }
-        }else{
-          if(stateFL.yellow == 1){
-            task = 4;
-          }
-        }
-      }
-
-      if(task == 4){
-        current_direction = backward;
-        choose_direction_and_move();
-        
-        if(home == yellow){
-          if(stateFL.yellow == 1 && stateRB.yellow == 1){
-            task = 5;
-          }
-        }else{
-          if(stateFL.blue == 1 && stateRB.blue == 1){
-            task = 5;
-          }
-        }
-      }
-
-      if(task == 5){
-        current_direction = right;
-        choose_direction_and_move();
-        
-        if(stateRB.black == 1){
-          task = 6;
-        }
-      }
-
-      if(task == 6){
-        current_direction = left;
-        choose_direction_and_move();
-        
-        if(home == yellow){
-          if(stateRB.yellow == 1){
-            task = 7;
-          }
-        }else{
-          if(stateRB.blue == 1){
-            
-            task = 7;
-          }
-        }
-        delay_timer = millis();
-        while(millis() - delay_timer < 300){
-          choose_direction_and_move();
-        }
-      }
-
-      if(task == 7){
-        current_direction = backward;
-        choose_direction_and_move();
-        
-        if(stateRB.black == 1){
-          task = 8;
-        }
-      }
-
-      if(task == 8){
-        current_direction = forward;
-        choose_direction_and_move();
-        
-         if(home == yellow){
-          if(stateRB.yellow == 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
-            }
-            stop_all_wheels();
-            exit(1);
-          }
-        }else{
-          if(stateRB.blue == 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
-            }
-            stop_all_wheels();
-            exit(1);
-          }
-        }
-      }
-    }
+  
     //motor test code
     //analogWrite(motor1_pin_servo_lib, p_in);
     // myservo1.writeMicroseconds(micros_p_in); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
