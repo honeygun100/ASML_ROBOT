@@ -66,8 +66,8 @@ home_options home;
 int curr_low_bound = 0;
 int curr_high_bound = 0;
 int yellowBound[2] = {0, 200};  // 55
-int blueBound[2] = {200, 500};   // 450
-int blackBound[2] = {500, 1200}; // 800
+int blueBound[2] = {200, 690};   // 450
+int blackBound[2] = {690, 1200}; // 800
 States stateFL;
 States stateRB;
 
@@ -187,13 +187,16 @@ void loop() {
   gyro_PID_loop_timer = millis();
   unsigned long delay_timer = millis();
   unsigned long end_game_timer = millis();
+  int start_pos;
   if(digitalRead(2) == LOW){
+    start_pos = 0;
     move_direction[4] = '\0';
     move_direction[0] = 'r';
     move_direction[1] = 'i';
     move_direction[2] = 'g';
     move_direction[3] = 't';
   }else{
+    start_pos = 1;
     move_direction[4] = '\0';
     move_direction[0] = 'l';
     move_direction[1] = 'e';
@@ -316,18 +319,19 @@ void loop() {
 
     
 
-      
-      if(digitalRead(2) == LOW){ // robot is sitting bottom left of board
+      if(start_pos == 0){
         if(task == 1){
           current_direction = forward;
           choose_direction_and_move();
           
           if(home == yellow){
             if(stateFL.blue == 1 && stateRB.blue == 1){
+              delay(200);
               task = 2;
             }
           }else{
             if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              delay(200);
               task = 2;
             }
           }
@@ -336,175 +340,90 @@ void loop() {
         
         if(task == 2){
           current_direction = right;
-          if(stateRB.black != 1){
-            delay_timer = millis();
-            getColor();
-            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
-            }
-          }    
-          
-          task = 3;
+          choose_direction_and_move();
+          getColor();
+          if(stateRB.black == 1){
+            task = 3;
+          }
         }
 
         if(task == 3){
-          current_direction = backward;
+          current_direction = left;
           choose_direction_and_move();
           
           if(home == yellow){
-            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+            if(stateRB.blue == 1){
               task = 4;
             }
           }else{
-            if(stateFL.blue == 1 && stateRB.blue == 1){
+            if(stateRB.yellow == 1){
               task = 4;
             }
           }
         }
 
         if(task == 4){
-          current_direction = right;
-          getColor();
-          if(stateRB.black != 1){
-            delay_timer = millis();
-            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
-            }
-          }     
-          
-          task = 5;
-        }
-
-        if(task == 5){
-          current_direction = forward;
+          current_direction = backward;
           choose_direction_and_move();
           
           if(home == yellow){
-            if(stateFL.blue == 1 && stateRB.blue == 1){
-              task = 2;
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 5;
             }
           }else{
-            if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              task = 2;
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 5;
             }
           }
         }
 
-        if(stateRB.black == 1 && task < 6 ){
-          move_direction[0] = 'l';
-          move_direction[1] = 'e';
-          move_direction[2] = 'f';
-          move_direction[3] = 't';
-          task = 6;
-        }
-
-        if(task == 6){
+        if(task == 5){
           current_direction = left;
           choose_direction_and_move();
           getColor();
-          if(stateRB.black == 0){
-            task = 7;
+          if(stateFL.black == 1){
+            task = 6;
           }
         }
 
-        //copied code here
+        if(task == 6){
+          current_direction = right;
+          choose_direction_and_move();
+          
+          if(home == yellow){
+            if(stateFL.yellow == 1){
+              task = 7;
+            }
+          }else{
+            if(stateFL.blue == 1){
+              
+              task = 7;
+            }
+          }
+
+          delay_timer = millis();
+          while(millis() - delay_timer < 300){
+            choose_direction_and_move();
+          }
+        }
+
         if(task == 7){
           current_direction = backward;
           choose_direction_and_move();
           
-          if(home == yellow){
-            if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              task = 8;
-            }
-          }else{
-            if(stateFL.blue == 1 && stateRB.blue == 1){
-              task = 8;
-            }
+          if(stateRB.black == 1){
+            task = 8;
           }
         }
 
         if(task == 8){
-          current_direction = left;
-          choose_direction_and_move();
-          getColor();
-          if(stateFL.black != 1){
-            delay_timer = millis();
-            while(stateFL.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
-            }
-          }     
-          
-          task = 9;
-        }
-
-        if(task == 9){
-          current_direction = forward;
-          choose_direction_and_move();
-          
-          if(home == yellow){
-            if(stateFL.blue == 1 && stateRB.blue == 1){
-              task = 10;
-            }
-          }else{
-            if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              task = 10;
-            }
-          }
-        }
-        if(task == 10){
-          current_direction = left;
-            getColor();
-            if(stateFL.black != 1){
-              delay_timer = millis();
-              while(stateFL.black != 1 && millis() - delay_timer < step_delay){
-                choose_direction_and_move();
-                getColor();
-              }
-            }     
-            
-            task = 7;
-        }
-
-        if(stateFL.black == 1 && task < 11){ // this was 10 but should be 11
-          task = 11;
-        }
-
-        if(task == 11){
-          current_direction = right;
-          choose_direction_and_move();
-          getColor();
-          if(stateFL.black == 0){
-            delay_timer = millis();
-            while(stateFL.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
-            }
-            task = 12;
-          }
-            
-        }
-
-        if(task == 12){
-          current_direction = backward;
-          choose_direction_and_move();
-          getColor();
-          if(stateRB.black == 1 ){
-            task = 13;
-          }
-        }
-      
-
-        if(task == 13){
           current_direction = forward;
           choose_direction_and_move();
           
           if(home == yellow){
             if(stateRB.yellow == 1){
               delay_timer = millis();
-              while(millis() - delay_timer < 800){
+              while(millis() - delay_timer < 300){
                 choose_direction_and_move();
               }
               stop_all_wheels();
@@ -513,7 +432,7 @@ void loop() {
           }else{
             if(stateRB.blue == 1){
               delay_timer = millis();
-              while(millis() - delay_timer < 800){
+              while(millis() - delay_timer < 300){
                 choose_direction_and_move();
               }
               stop_all_wheels();
@@ -521,20 +440,25 @@ void loop() {
             }
           }
         }
-        //Serial.println(task);
       }
 
-      if(digitalRead(2) == HIGH){// robot is sitting bottom right of board
+
+
+
+
+      if(start_pos == 1){
         if(task == 1){
           current_direction = forward;
           choose_direction_and_move();
           
           if(home == yellow){
             if(stateFL.blue == 1 && stateRB.blue == 1){
+              delay(200);
               task = 2;
             }
           }else{
             if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              delay(200);
               task = 2;
             }
           }
@@ -543,176 +467,89 @@ void loop() {
         
         if(task == 2){
           current_direction = left;
-          if(stateFL.black != 1){
-            delay_timer = millis();
-            getColor();
-            while(stateFL.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
-            }
-          }    
-          
-          task = 3;
+          choose_direction_and_move();
+          getColor();
+          if(stateFL.black == 1){
+            task = 3;
+          }
         }
 
         if(task == 3){
-          current_direction = backward;
+          current_direction = right;
           choose_direction_and_move();
-          getColor();
+          
           if(home == yellow){
-            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+            if(stateFL.blue == 1){
               task = 4;
             }
           }else{
-            if(stateFL.blue == 1 && stateRB.blue == 1){
+            if(stateFL.yellow == 1){
               task = 4;
             }
           }
         }
 
         if(task == 4){
-          current_direction = left;
-          getColor();
-          if(stateFL.black != 1){
-            delay_timer = millis();
-            while(stateFL.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
-            }
-          }     
+          current_direction = backward;
+          choose_direction_and_move();
           
-          task = 5;
+          if(home == yellow){
+            if(stateFL.yellow == 1 && stateRB.yellow == 1){
+              task = 5;
+            }
+          }else{
+            if(stateFL.blue == 1 && stateRB.blue == 1){
+              task = 5;
+            }
+          }
         }
 
         if(task == 5){
-          current_direction = forward;
+          current_direction = right;
           choose_direction_and_move();
           
-          if(home == yellow){
-            if(stateFL.blue == 1 && stateRB.blue == 1){
-              task = 2;
-            }
-          }else{
-            if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              task = 2;
-            }
+          if(stateRB.black == 1){
+            task = 6;
           }
-        }
-
-        if(stateFL.black == 1 && task < 6 ){
-          task = 6;
-          move_direction[4] = '\0';
-          move_direction[0] = 'r';
-          move_direction[1] = 'i';
-          move_direction[2] = 'g';
-          move_direction[3] = 't';
         }
 
         if(task == 6){
-          current_direction = right;
-          choose_direction_and_move();
-          getColor();
-          if(stateFL.black == 0){
-            task = 7;
-          }
-            
-        }
-
-        //copied code bere
-
-        if(task == 7){
-          current_direction = backward;
-          choose_direction_and_move();
-          getColor();
-          if(home == yellow){
-            if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              task = 8;
-            }
-          }else{
-            if(stateFL.blue == 1 && stateRB.blue == 1){
-              task = 8;
-            }
-          }
-        }
-
-        if(task == 8){
-          current_direction = right;
-          getColor();
-          if(stateRB.black != 1){
-            delay_timer = millis();
-            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
-            }
-          }     
-          
-          task = 9;
-        }
-
-        if(task == 9){
-          current_direction = forward;
-          choose_direction_and_move();
-          
-          if(home == yellow){
-            if(stateFL.blue == 1 && stateRB.blue == 1){
-              task = 10;
-            }
-          }else{
-            if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              task = 10;
-            }
-          }
-        }
-
-        if(task == 10){
-          current_direction = right;
-          getColor();
-          if(stateRB.black != 1){
-            delay_timer = millis();
-            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
-            }
-          }     
-          
-          task = 7;
-        }
-
-        if(stateRB.black == 1 && task < 11 ){
-          task = 11;
-        }
-
-        if(task == 11){
           current_direction = left;
           choose_direction_and_move();
-          getColor();
-          if(stateRB.black == 0){
-            delay_timer = millis();
-            while(stateRB.black != 1 && millis() - delay_timer < step_delay){
-              choose_direction_and_move();
-              getColor();
+          
+          if(home == yellow){
+            if(stateRB.yellow == 1){
+              task = 7;
             }
-            task = 12;
+          }else{
+            if(stateRB.blue == 1){
+              
+              task = 7;
+            }
+          }
+          delay_timer = millis();
+          while(millis() - delay_timer < 300){
+            choose_direction_and_move();
           }
         }
 
-        if(task == 12){
+        if(task == 7){
           current_direction = backward;
           choose_direction_and_move();
           getColor();
           if(stateRB.black == 1){
-            task = 13;
+            task = 8;
           }
         }
 
-        if(task == 13){
+        if(task == 8){
           current_direction = forward;
           choose_direction_and_move();
           
           if(home == yellow){
             if(stateRB.yellow == 1){
               delay_timer = millis();
-              while(millis() - delay_timer < 800){
+              while(millis() - delay_timer < 300){
                 choose_direction_and_move();
               }
               stop_all_wheels();
@@ -721,7 +558,7 @@ void loop() {
           }else{
             if(stateRB.blue == 1){
               delay_timer = millis();
-              while(millis() - delay_timer < 800){
+              while(millis() - delay_timer < 300){
                 choose_direction_and_move();
               }
               stop_all_wheels();
@@ -729,8 +566,8 @@ void loop() {
             }
           }
         }
-
       }
+      
     }else{
       getColor();
       

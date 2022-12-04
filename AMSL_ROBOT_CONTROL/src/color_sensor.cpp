@@ -49,10 +49,11 @@ States checkColor(States state){
 // get which color we are on
 
 void getColor(){
-  stateFL.period = pulseIn(sensorFL, LOW);
-  stateFL = checkColor(stateFL);
   stateRB.period = pulseIn(sensorRB, LOW);
   stateRB = checkColor(stateRB);
+
+  stateFL.period = pulseIn(sensorFL, LOW);
+  stateFL = checkColor(stateFL);
 }
 
 
