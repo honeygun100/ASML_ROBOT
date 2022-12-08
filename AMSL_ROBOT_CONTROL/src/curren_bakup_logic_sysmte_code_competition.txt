@@ -164,7 +164,7 @@ void loop() {
   int home_task = 1;
   unsigned long step_delay = 1300;
 
-  int print_colors = 0;
+  int print_colors = 1;
 
   getColor();
   if(stateFL.blue == 1){
@@ -176,7 +176,7 @@ void loop() {
   
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
-  print_gyro_values = 1;
+  print_gyro_values = 0;
   
   //DURING THE 5 SECONDS EMILE NEEDS TO HOLD THE STRING
   release();
@@ -326,20 +326,12 @@ void loop() {
           
           if(home == yellow){
             if(stateFL.blue == 1 && stateRB.blue == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 250){
-                choose_direction_and_move();
-              }
-              
+              delay(200);
               task = 2;
             }
           }else{
             if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 250){
-                choose_direction_and_move();
-              }
-
+              delay(200);
               task = 2;
             }
           }
@@ -359,13 +351,14 @@ void loop() {
           current_direction = left;
           choose_direction_and_move();
           
-          if(stateRB.black != 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
+          if(home == yellow){
+            if(stateRB.blue == 1){
+              task = 4;
             }
-
-            task = 4;
+          }else{
+            if(stateRB.yellow == 1){
+              task = 4;
+            }
           }
         }
 
@@ -397,14 +390,22 @@ void loop() {
           current_direction = right;
           choose_direction_and_move();
           
-          if(stateFL.black != 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
+          if(home == yellow){
+            if(stateFL.yellow == 1){
+              task = 7;
             }
-          }          
-        }
+          }else{
+            if(stateFL.blue == 1){
+              
+              task = 7;
+            }
+          }
 
+          delay_timer = millis();
+          while(millis() - delay_timer < 300){
+            choose_direction_and_move();
+          }
+        }
 
         if(task == 7){
           current_direction = backward;
@@ -443,6 +444,8 @@ void loop() {
 
 
 
+
+
       if(start_pos == 1){
         if(task == 1){
           current_direction = forward;
@@ -450,20 +453,12 @@ void loop() {
           
           if(home == yellow){
             if(stateFL.blue == 1 && stateRB.blue == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 250){
-                choose_direction_and_move();
-              }
-              
+              delay(200);
               task = 2;
             }
           }else{
             if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 250){
-                choose_direction_and_move();
-              }
-
+              delay(200);
               task = 2;
             }
           }
@@ -483,13 +478,14 @@ void loop() {
           current_direction = right;
           choose_direction_and_move();
           
-          if(stateFL.black != 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
+          if(home == yellow){
+            if(stateFL.blue == 1){
+              task = 4;
             }
-
-            task = 4;
+          }else{
+            if(stateFL.yellow == 1){
+              task = 4;
+            }
           }
         }
 
@@ -511,7 +507,7 @@ void loop() {
         if(task == 5){
           current_direction = right;
           choose_direction_and_move();
-          getColor();
+          
           if(stateRB.black == 1){
             task = 6;
           }
@@ -521,19 +517,26 @@ void loop() {
           current_direction = left;
           choose_direction_and_move();
           
-          if(stateRB.black != 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
+          if(home == yellow){
+            if(stateRB.yellow == 1){
+              task = 7;
             }
-          }          
+          }else{
+            if(stateRB.blue == 1){
+              
+              task = 7;
+            }
+          }
+          delay_timer = millis();
+          while(millis() - delay_timer < 300){
+            choose_direction_and_move();
+          }
         }
-
 
         if(task == 7){
           current_direction = backward;
           choose_direction_and_move();
-          
+          getColor();
           if(stateRB.black == 1){
             task = 8;
           }
