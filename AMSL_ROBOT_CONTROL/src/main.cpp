@@ -2,8 +2,8 @@
 //THIS COMMIT IS BEGGNINGING OF THE MERGING
 
 
-//bar 1 interp 1.628 and 1.373 
-//bar 2 interp 1.588 and 1.413
+//bar 1 interp 1.628 and 1.373
+//bar 2 interp 1.628 and 1.373
 
 
 
