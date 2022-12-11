@@ -364,7 +364,11 @@ void loop() {
             while(millis() - delay_timer < 300){
               choose_direction_and_move();
             }
-
+            move_direction[4] = '\0';
+            move_direction[0] = 'l';
+            move_direction[1] = 'e';
+            move_direction[2] = 'f';
+            move_direction[3] = 't';
             task = 4;
           }
         }
@@ -402,7 +406,13 @@ void loop() {
             while(millis() - delay_timer < 300){
               choose_direction_and_move();
             }
-          }          
+            move_direction[4] = '\0';
+            move_direction[0] = 'r';
+            move_direction[1] = 'i';
+            move_direction[2] = 'g';
+            move_direction[3] = 't';
+            task = 7;
+          }
         }
 
 
@@ -488,7 +498,11 @@ void loop() {
             while(millis() - delay_timer < 300){
               choose_direction_and_move();
             }
-
+            move_direction[4] = '\0';
+            move_direction[0] = 'r';
+            move_direction[1] = 'i';
+            move_direction[2] = 'g';
+            move_direction[3] = 't';
             task = 4;
           }
         }
@@ -526,7 +540,13 @@ void loop() {
             while(millis() - delay_timer < 300){
               choose_direction_and_move();
             }
-          }          
+            move_direction[4] = '\0';
+            move_direction[0] = 'l';
+            move_direction[1] = 'e';
+            move_direction[2] = 'f';
+            move_direction[3] = 't';
+            task = 7;
+          }
         }
 
 
