@@ -22,8 +22,7 @@
 #define sensorFL 8
 #define sensorRB 9
 
-typedef struct States
-{
+typedef struct States{
   int curr_low_bound = 0, curr_high_bound = 0, curr = 0, opp = 1, yellow = 0, blue = 0, black = 0, period = 0;
 }States;
 
@@ -112,6 +111,7 @@ extern States stateFL;
 extern States stateRB;
 enum home_options {blue, yellow};
 extern home_options home;
+
 //Lever variables
 extern Servo lever_servo;
 extern unsigned long release_timer;

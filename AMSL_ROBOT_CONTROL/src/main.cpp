@@ -89,7 +89,7 @@ void setup() {
   pinMode(2, INPUT);
 
   //Servo set up
-  lever_servo.attach(11); // 8 prob wont work we need to use 10 
+  lever_servo.attach(11); // 8 prob wont work we need to use 11 
   myservo1.attach(motor1_pin_servo_lib);
   myservo2.attach(motor2_pin_servo_lib);
   myservo3.attach(motor3_pin_servo_lib);
@@ -164,7 +164,7 @@ void loop() {
   int home_task = 1;
   unsigned long step_delay = 1300;
 
-  int print_colors = 0;
+  int print_colors = 1;
 
   getColor();
   if(stateFL.blue == 1){
