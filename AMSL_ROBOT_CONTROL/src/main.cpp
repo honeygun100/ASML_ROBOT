@@ -165,6 +165,7 @@ void loop() {
   unsigned long step_delay = 1300;
 
   int print_colors = 1;
+  print_gyro_values = 1;
 
   getColor();
   if(stateFL.blue == 1){
@@ -176,7 +177,7 @@ void loop() {
   
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
-  print_gyro_values = 1;
+  
   
   //DURING THE 5 SECONDS EMILE NEEDS TO HOLD THE STRING
   release();
@@ -318,8 +319,8 @@ void loop() {
 
 
     
-
-      if(start_pos == 0){
+      // we are also tracking the move direction of the robot, so when game timer hits, we know the direction
+      if(start_pos == 0){ //start position is on the back left of board, home checks are in the tasks
         if(task == 1){
           current_direction = forward;
           choose_direction_and_move();
@@ -585,7 +586,7 @@ void loop() {
         }
       }
       
-    }else{
+    }else{ // When the game ends, get to the Final side of the board
       getColor();
       
       if(move_direction[0] == 'r'){
