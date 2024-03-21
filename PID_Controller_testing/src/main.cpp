@@ -42,7 +42,7 @@ float gyro_degrees = 0.00; // extern
 float gyro_degrees2 = 0.00; // extern
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
-float offset1 = 0.00056700; // this is to fix the Rz of the coordiante plane
+float offset1 = 0.000000; // this is to fix the Rz of the coordiante plane 
 float gyro_desired = offset1; // extern
 
 float gyro_PID_P = 0.00; // extern
@@ -223,14 +223,14 @@ void loop() {
           Serial.println(gyro_PID_KD);
 
         }else if(incomingCharacter == 'z'){
-          offset1 += .0000010;
+          gyro_desired += .00010;
           Serial.print("offset1 is ");
-          Serial.println(offset1);
+          Serial.println(gyro_desired,8);
 
         }else if(incomingCharacter == 'x'){
-          offset1 -= .0000010;
+          gyro_desired -= .00010;
           Serial.print("offset1 is ");
-          Serial.println(offset1);
+          Serial.println(gyro_desired,8);
 
         }else if(incomingCharacter == 'c'){
           offset2 += .5;
@@ -265,6 +265,12 @@ void loop() {
     // myservo2.writeMicroseconds(micros_p_in); // front wheel
     // myservo3.writeMicroseconds(micros_p_in); // right wheel
     // myservo4.writeMicroseconds(micros_p_in); // back wheel
+    Serial.print("       ");
+    Serial.print(gyro_KP_divider,5);
+    Serial.print(" ");
+    Serial.print(gyro_PID_KI,5);
+    Serial.print(" ");
+    Serial.print(gyro_PID_KD,5);
     Serial.println("");
   }
 }
