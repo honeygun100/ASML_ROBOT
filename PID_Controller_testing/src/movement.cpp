@@ -27,7 +27,7 @@ void choose_direction_and_move(){
     //MPU_6050_update_Gyro_values();
 
     //GYRO_PID_LOOP
-    if(current_time - gyro_PID_loop_timer > .00000000005){ //50hz  20 
+    if(current_time - gyro_PID_loop_timer > (1/60)){ //60hz
         gyro_PID_loop();
         gyro_PID_loop_timer = current_time;
     }

@@ -49,10 +49,10 @@ float gyro_PID_P = 0.00; // extern
 float gyro_PID_I = 0.00; // extern
 float gyro_PID_D = 0.00; // extern 
 
-float gyro_KP_divider = .138; // extern .123 at 11.5 volts .138
+float gyro_KP_divider = .041; // extern .123 at 11.5 volts .138
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
-float gyro_PID_KI = 0.00010; // extern .00020 at 11.5 volts
-float gyro_PID_KD = 10.00; // extern 102.50 at 11.5 volts
+float gyro_PID_KI = 0.00040; // extern .00020 at 11.5 volts
+float gyro_PID_KD = 112.00; // extern 102.50 at 11.5 volts
 float gyro_PID_out = 00.00; // extern
 int print_gyro_values;
 bool gyro_foward_flag = true; // extern NOT USED
@@ -138,7 +138,7 @@ void loop() {
   int home_task = 1;
   unsigned long step_delay = 1300;
   int print_colors = 1;
-  print_gyro_values = 1;
+  print_gyro_values = 0;
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
   
@@ -172,21 +172,21 @@ void loop() {
 
     if(Serial.available()){
         char incomingCharacter = Serial.read();
-        if(incomingCharacter == '1'){ // case one and two are for test code at bottom of void loop()
+        if(incomingCharacter == 'o'){ // case one and two are for test code at bottom of void loop()
           p_in++;
           micros_p_in++;
           Serial.print(p_in);
           Serial.print("  ");
           Serial.println(micros_p_in);
           
-        }else if(incomingCharacter == '2'){
+        }else if(incomingCharacter == 'p'){
           p_in--;
           micros_p_in--;
           Serial.print(p_in);
           Serial.print("  ");
           Serial.println(micros_p_in);
 
-        }else if(incomingCharacter == '3'){
+        }else if(incomingCharacter == '1'){
           gyro_KP_divider += .001;
           Serial.print("kp_divider is ");
           Serial.print(gyro_KP_divider,5);
@@ -194,7 +194,7 @@ void loop() {
           Serial.print("\tkp is ");
           Serial.println(gyro_PID_KP,5);
 
-        }else if(incomingCharacter == '4'){
+        }else if(incomingCharacter == '2'){
           gyro_KP_divider -= .001;
           Serial.print("kp_divider is ");
           Serial.print(gyro_KP_divider,5);
@@ -202,12 +202,12 @@ void loop() {
           Serial.print("\tkp is ");
           Serial.println(gyro_PID_KP,5);
 
-        }else if(incomingCharacter == '5'){
+        }else if(incomingCharacter == '4'){
           gyro_PID_KI += .0001;
           Serial.print("gyro_PID_KI is ");
           Serial.println(gyro_PID_KI,5);
 
-        }else if(incomingCharacter == '6'){
+        }else if(incomingCharacter == '5'){
           gyro_PID_KI -= .0001;
           Serial.print("gyro_PID_KI is ");
           Serial.println(gyro_PID_KI,5);
@@ -265,13 +265,13 @@ void loop() {
     // myservo2.writeMicroseconds(micros_p_in); // front wheel
     // myservo3.writeMicroseconds(micros_p_in); // right wheel
     // myservo4.writeMicroseconds(micros_p_in); // back wheel
-    Serial.print("       ");
-    Serial.print(gyro_KP_divider,5);
-    Serial.print(" ");
-    Serial.print(gyro_PID_KI,5);
-    Serial.print(" ");
-    Serial.print(gyro_PID_KD,5);
-    Serial.println("");
+    // Serial.print("       ");
+    // Serial.print(gyro_KP_divider,5);
+    // Serial.print(" ");
+    // Serial.print(gyro_PID_KI,5);
+    // Serial.print(" ");
+    // Serial.print(gyro_PID_KD,5);
+    // Serial.println("");
   }
 }
 
