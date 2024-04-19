@@ -18,6 +18,10 @@
 #define motor2_pin_servo_lib 5
 #define motor3_pin_servo_lib 6
 #define motor4_pin_servo_lib 10
+#define game_start_input_pin 12
+#define game_stat_output_pin 13
+#define up_an_where_pin_input 2
+#define up_and_where_pin_output 7
 
 #define sensorFL 8
 #define sensorRB 9

@@ -86,8 +86,8 @@ void setup() {
   //analogWrite(motor1_pin_servo_lib, p_in);
 
   Serial.begin(9600);
-  pinMode(12, INPUT);
-  pinMode(13, OUTPUT);
+  pinMode(game_start_input_pin, INPUT);
+  pinMode(game_stat_output_pin, OUTPUT);
   //Servo set up
   lever_servo.attach(11); // 8 prob wont work we need to use 11 
   myservo1.attach(motor1_pin_servo_lib); // pin 3
@@ -126,8 +126,8 @@ void setup() {
 
 void loop() {
   int counter = 0;
-  digitalWrite(13, HIGH);
-  while(digitalRead(12) == LOW){
+  digitalWrite(game_stat_output_pin, HIGH);
+  while(digitalRead(game_start_input_pin) == LOW){
     ;;
   }
   Serial.print("nice, we in here");
