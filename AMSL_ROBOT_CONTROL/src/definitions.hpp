@@ -13,11 +13,16 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include "Adafruit_TCS34725.h"
 
 #define motor1_pin_servo_lib 3
 #define motor2_pin_servo_lib 5
 #define motor3_pin_servo_lib 6
 #define motor4_pin_servo_lib 10
+#define game_start_input_pin 12
+#define game_start_output_pin 13
+#define up_an_where_pin_input 2
+#define up_and_where_pin_output 7
 
 #define sensorFL 8
 #define sensorRB 9
@@ -36,6 +41,7 @@ extern Direciton current_direction;
 //FUNCTION declarations
 void gyro_PID_loop();
 void MPU_6050_update_Gyro_values();
+void displayCalStatus();
 void BNO005_update_Gyro_values();
 void BNO005_get_standing_error();
 void motor_move();
@@ -111,6 +117,8 @@ extern States stateFL;
 extern States stateRB;
 enum home_options {blue, yellow};
 extern home_options home;
+extern Adafruit_TCS34725 tcs;
+extern uint16_t r, g, b, c, colorTemp, lux;
 
 //Lever variables
 extern Servo lever_servo;

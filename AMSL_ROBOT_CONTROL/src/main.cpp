@@ -42,17 +42,17 @@ float gyro_degrees = 0.00; // extern
 float gyro_degrees2 = 0.00; // extern
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
-float offset1 = 0.00056700; // this is to fix the Rz of the coordiante plane
+float offset1 = 0.00; // this is to fix the Rz of the coordiante plane, 0.00056700 is old value
 float gyro_desired = offset1; // extern
 
 float gyro_PID_P = 0.00; // extern
 float gyro_PID_I = 0.00; // extern
 float gyro_PID_D = 0.00; // extern 
 
-float gyro_KP_divider = .138; // extern .123 at 11.5 volts .138
+float gyro_KP_divider = .041; // extern .123 at 11.5 volts .138
 float gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // extern
-float gyro_PID_KI = 0.00010; // extern .00020 at 11.5 volts
-float gyro_PID_KD = 10.00; // extern 102.50 at 11.5 volts
+float gyro_PID_KI = 0.00040; // extern .00020 at 11.5 volts
+float gyro_PID_KD = 112.00; // extern 102.50 at 11.5 volts
 float gyro_PID_out = 00.00; // extern
 int print_gyro_values;
 bool gyro_foward_flag = true; // extern NOT USED
@@ -70,7 +70,8 @@ int blueBound[2] = {200, 690};   // 450
 int blackBound[2] = {690, 1200}; // 800
 States stateFL;
 States stateRB;
-
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+uint16_t r, g, b, c, colorTemp, lux;
 
 //lever servo Variables
 Servo lever_servo; 
@@ -86,8 +87,10 @@ void setup() {
   //analogWrite(motor1_pin_servo_lib, p_in);
 
   Serial.begin(9600);
-  pinMode(2, INPUT);
-
+  pinMode(up_an_where_pin_input, INPUT);
+  pinMode(up_and_where_pin_output, OUTPUT);
+  pinMode(game_start_input_pin, INPUT);
+  pinMode(game_start_output_pin, OUTPUT);
   //Servo set up
   lever_servo.attach(11); // 8 prob wont work we need to use 11 
   myservo1.attach(motor1_pin_servo_lib);
@@ -98,27 +101,6 @@ void setup() {
   myservo2.writeMicroseconds(micros_p_in);
   myservo3.writeMicroseconds(micros_p_in);
   myservo4.writeMicroseconds(micros_p_in);
-  
-  
-  
-  
-
-
-  //GYRO setup
-  // Try to initialize MPU_6050!
-  /*
-  if (!mpu.begin()) {
-    Serial.println("Failed to find MPU6050 chip");
-    while (1) {
-    delay(10);
-    }
-  }
-  mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
-  mpu.setGyroRange(MPU6050_RANGE_250_DEG);
-  mpu.setFilterBandwidth(MPU6050_BAND_10_HZ); //maybe 21 instead of 10
-  //Serial.println("");
-  delay(100);
-  */
 
 
   
@@ -137,14 +119,17 @@ void setup() {
 
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
-  
-  
-  delay(1050);
 
 
   // color sensor 
   pinMode(sensorFL, INPUT);
   pinMode(sensorRB, INPUT);
+  if (tcs.begin()) {
+    Serial.println("Found sensor");
+  } else {
+    Serial.println("No TCS34725 found, check connections");
+  while (1);
+  }
 }
 
 
@@ -163,9 +148,9 @@ void loop() {
   int task = 1;
   int home_task = 1;
   unsigned long step_delay = 1300;
-
   int print_colors = 1;
   print_gyro_values = 1;
+
 
   getColor();
   if(stateFL.blue == 1){
@@ -178,18 +163,22 @@ void loop() {
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
   
-  
+  digitalWrite(game_start_output_pin, HIGH); // WAIT FOR PHYSICAL SWITCH TO FLIP
+  while(digitalRead(game_start_input_pin) == LOW){
+    ;;
+  }
+  Serial.print("nice, we in here");
+
   //DURING THE 5 SECONDS EMILE NEEDS TO HOLD THE STRING
   release();
-  
-  
 
   gyro_update_loop_timer = millis();
   gyro_PID_loop_timer = millis();
   unsigned long delay_timer = millis();
   unsigned long end_game_timer = millis();
   int start_pos;
-  if(digitalRead(2) == LOW){
+  digitalWrite(up_and_where_pin_output, HIGH);
+  if(digitalRead(up_an_where_pin_input) == LOW){// FLIP SWITCH ACCORDING TO WHICH DIRECTION WE NEED TO MOVE FIRST.
     start_pos = 0;
     move_direction[4] = '\0';
     move_direction[0] = 'r';
@@ -721,10 +710,8 @@ void loop() {
     // myservo2.writeMicroseconds(micros_p_in); // front wheel
     // myservo3.writeMicroseconds(micros_p_in); // right wheel
     // myservo4.writeMicroseconds(micros_p_in); // back wheel
-    Serial.println("");
+    //Serial.println("");
   }
-
-  Serial.println("");
 }
 
 
