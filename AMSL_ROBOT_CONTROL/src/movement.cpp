@@ -1,6 +1,11 @@
 #include "definitions.hpp"
 
-
+void control_move_time_delay(unsigned long x){
+    unsigned long delay_timer = millis();
+    while(millis() - delay_timer < x){
+    choose_direction_and_move();
+    }
+}
 
 void choose_direction_and_move(){
     //UPDATE_GYRO_VALUES

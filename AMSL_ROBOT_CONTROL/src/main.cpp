@@ -147,7 +147,7 @@ void loop() {
   //int test_flag = 0;
   int task = 1;
   int home_task = 1;
-  unsigned long step_delay = 1300;
+  //unsigned long step_delay = 1300;
   int print_colors = 1;
   print_gyro_values = 1;
 
@@ -167,15 +167,12 @@ void loop() {
   while(digitalRead(game_start_input_pin) == LOW){
     ;;
   }
-  Serial.print("nice, we in here");
+  digitalWrite(game_start_output_pin, LOW);
 
   //DURING THE 5 SECONDS EMILE NEEDS TO HOLD THE STRING
   release();
 
-  gyro_update_loop_timer = millis();
-  gyro_PID_loop_timer = millis();
-  unsigned long delay_timer = millis();
-  unsigned long end_game_timer = millis();
+  
   int start_pos;
   digitalWrite(up_and_where_pin_output, HIGH);
   if(digitalRead(up_an_where_pin_input) == LOW){// FLIP SWITCH ACCORDING TO WHICH DIRECTION WE NEED TO MOVE FIRST.
@@ -193,6 +190,11 @@ void loop() {
     move_direction[2] = 'f';
     move_direction[3] = 't';
   }
+
+  gyro_update_loop_timer = millis();
+  gyro_PID_loop_timer = millis();
+  //unsigned long delay_timer = millis();
+  unsigned long end_game_timer = millis();
   while(1){
     if(millis() - end_game_timer < 45000){
       // Use Serial to test inputs to motors and speeds/calibrate motors
@@ -316,20 +318,12 @@ void loop() {
           
           if(home == yellow){
             if(stateFL.blue == 1 && stateRB.blue == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 250){
-                choose_direction_and_move();
-              }
-              
+              control_move_time_delay(250);
               task = 2;
             }
           }else{
             if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 250){
-                choose_direction_and_move();
-              }
-
+              control_move_time_delay(250);
               task = 2;
             }
           }
@@ -350,10 +344,7 @@ void loop() {
           choose_direction_and_move();
           
           if(stateRB.black != 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
-            }
+            control_move_time_delay(300);
             move_direction[4] = '\0';
             move_direction[0] = 'l';
             move_direction[1] = 'e';
@@ -392,10 +383,7 @@ void loop() {
           choose_direction_and_move();
           
           if(stateFL.black != 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
-            }
+            control_move_time_delay(300);
             move_direction[4] = '\0';
             move_direction[0] = 'r';
             move_direction[1] = 'i';
@@ -421,19 +409,13 @@ void loop() {
           
           if(home == yellow){
             if(stateRB.yellow == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 300){
-                choose_direction_and_move();
-              }
+              control_move_time_delay(300);
               stop_all_wheels();
               exit(1);
             }
           }else{
             if(stateRB.blue == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 300){
-                choose_direction_and_move();
-              }
+              control_move_time_delay(300);
               stop_all_wheels();
               exit(1);
             }
@@ -443,27 +425,19 @@ void loop() {
 
 
 
-      if(start_pos == 1){
+      if(start_pos == 1){ //start position is on the back right of board, home checks are in the tasks
         if(task == 1){
           current_direction = forward;
           choose_direction_and_move();
           
           if(home == yellow){
             if(stateFL.blue == 1 && stateRB.blue == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 250){
-                choose_direction_and_move();
-              }
-              
+              control_move_time_delay(250);
               task = 2;
             }
           }else{
             if(stateFL.yellow == 1 && stateRB.yellow == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 250){
-                choose_direction_and_move();
-              }
-
+              control_move_time_delay(250);
               task = 2;
             }
           }
@@ -484,10 +458,7 @@ void loop() {
           choose_direction_and_move();
           
           if(stateFL.black != 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
-            }
+            control_move_time_delay(300);
             move_direction[4] = '\0';
             move_direction[0] = 'r';
             move_direction[1] = 'i';
@@ -526,10 +497,7 @@ void loop() {
           choose_direction_and_move();
           
           if(stateRB.black != 1){
-            delay_timer = millis();
-            while(millis() - delay_timer < 300){
-              choose_direction_and_move();
-            }
+            control_move_time_delay(300);
             move_direction[4] = '\0';
             move_direction[0] = 'l';
             move_direction[1] = 'e';
@@ -555,19 +523,13 @@ void loop() {
           
           if(home == yellow){
             if(stateRB.yellow == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 300){
-                choose_direction_and_move();
-              }
+              control_move_time_delay(300);
               stop_all_wheels();
               exit(1);
             }
           }else{
             if(stateRB.blue == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 300){
-                choose_direction_and_move();
-              }
+              control_move_time_delay(300);
               stop_all_wheels();
               exit(1);
             }
@@ -594,12 +556,8 @@ void loop() {
           choose_direction_and_move();
           
           if(stateFL.black != 1){
+            control_move_time_delay(300);
             home_task = 3;
-          }
-          delay_timer = millis();
-          while(millis() - delay_timer < 300 && stateFL.black != 1){
-            getColor();
-            choose_direction_and_move();
           }
         }
 
@@ -618,19 +576,13 @@ void loop() {
           
           if(home == yellow){ // this was home_task before but needs to be home
             if(stateRB.yellow == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 400){
-                choose_direction_and_move();
-              }
+              control_move_time_delay(400);
               stop_all_wheels();
               exit(1);
             }
           }else{
             if(stateRB.blue == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 400){
-                choose_direction_and_move();
-              }
+              control_move_time_delay(400);
               stop_all_wheels();
               exit(1);
             }
@@ -654,12 +606,8 @@ void loop() {
           choose_direction_and_move();
           
           if(stateRB.black != 1){
+            control_move_time_delay(300);
             home_task = 3;
-          }
-          delay_timer = millis();
-          while(millis() - delay_timer < 300 && stateRB.black != 1){
-            getColor();
-            choose_direction_and_move();
           }
         }
 
@@ -678,19 +626,13 @@ void loop() {
           
           if(home == yellow){  // this was home_task before but needs to be home
             if(stateRB.yellow == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 400){
-                choose_direction_and_move();
-              }
+              control_move_time_delay(400);
               stop_all_wheels();
               exit(1);
             }
           }else{
             if(stateRB.blue == 1){
-              delay_timer = millis();
-              while(millis() - delay_timer < 400){
-                choose_direction_and_move();
-              }
+              control_move_time_delay(400);
               stop_all_wheels();
               exit(1);
             }

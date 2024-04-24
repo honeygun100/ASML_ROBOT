@@ -45,6 +45,7 @@ void displayCalStatus();
 void BNO005_update_Gyro_values();
 void BNO005_get_standing_error();
 void motor_move();
+void control_move_time_delay(unsigned long x);
 void choose_direction_and_move();
 void control_move_forward(float leftwheel_p_in, float rightwheel_p_in);
 void control_move_backward(float leftwheel_p_in, float rightwheel_p_in);
