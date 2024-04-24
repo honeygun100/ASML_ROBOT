@@ -212,7 +212,7 @@ void loop() {
 
     //motor test code
     // analogWrite(motor1_pin_servo_lib, p_in);
-    myservo1.writeMicroseconds(1600); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
+    myservo1.writeMicroseconds(1500); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
                                              //                                                   1.373 * 1000 for motor one to move backward clockwise
     // myservo2.writeMicroseconds(micros_p_in); // front wheel
     // myservo3.writeMicroseconds(micros_p_in); // right wheel

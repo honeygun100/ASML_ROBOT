@@ -144,6 +144,7 @@ void gyro_PID_loop(){
     if(print_gyro_values == 1){
         Serial.print("  gyro_PID_out: ");
         Serial.print(gyro_PID_out);
+        Serial.println();
     }
 
 

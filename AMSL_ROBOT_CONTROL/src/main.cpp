@@ -70,8 +70,8 @@ int blueBound[2] = {200, 690};   // 450
 int blackBound[2] = {690, 1200}; // 800
 States stateFL;
 States stateRB;
-Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-uint16_t r, g, b, c, colorTemp, lux;
+//Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+//uint16_t r, g, b, c, colorTemp, lux;
 
 //lever servo Variables
 Servo lever_servo; 
@@ -124,12 +124,13 @@ void setup() {
   // color sensor 
   pinMode(sensorFL, INPUT);
   pinMode(sensorRB, INPUT);
-  if (tcs.begin()) {
-    Serial.println("Found sensor");
-  } else {
-    Serial.println("No TCS34725 found, check connections");
-  while (1);
-  }
+  // if (tcs.begin()) {
+  //   Serial.println("Found sensor");
+  // } else {
+  //   Serial.println("No TCS34725 found, check connections");
+  // while (1);
+  // }
+  delay(3000);
 }
 
 
@@ -148,8 +149,8 @@ void loop() {
   int task = 1;
   int home_task = 1;
   //unsigned long step_delay = 1300;
-  int print_colors = 1;
-  print_gyro_values = 1;
+  int print_colors = 0;
+  print_gyro_values = 0;
 
 
   getColor();
@@ -162,13 +163,14 @@ void loop() {
   
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
-  
+  Serial.println("we are here");
   digitalWrite(game_start_output_pin, HIGH); // WAIT FOR PHYSICAL SWITCH TO FLIP
   while(digitalRead(game_start_input_pin) == LOW){
     ;;
   }
   digitalWrite(game_start_output_pin, LOW);
-
+  Serial.println("also we  are here");
+  
   //DURING THE 5 SECONDS EMILE NEEDS TO HOLD THE STRING
   release();
 
@@ -219,25 +221,25 @@ void loop() {
         Serial.print("Period: ");
         Serial.print(stateFL.period);
         Serial.print(" | ");
-        Serial.print("------- RB:   | ");
-        Serial.print("Curr: ");
-        Serial.print(stateRB.curr);
-        Serial.print(" | ");
-        Serial.print("Opp: ");
-        Serial.print(stateRB.opp);
-        Serial.print(" | ");
-        Serial.print("Blue: ");
-        Serial.print(stateRB.blue);
-        Serial.print(" | ");
-        Serial.print("Yellow: ");
-        Serial.print(stateRB.yellow);
-        Serial.print(" | ");
-        Serial.print("Black: ");
-        Serial.print(stateRB.black);
-        Serial.print(" | ");
-        Serial.print("Period: ");
-        Serial.print(stateRB.period);
-        Serial.print(" | ");
+        // Serial.print("------- RB:   | ");
+        // Serial.print("Curr: ");
+        // Serial.print(stateRB.curr);
+        // Serial.print(" | ");
+        // Serial.print("Opp: ");
+        // Serial.print(stateRB.opp);
+        // Serial.print(" | ");
+        // Serial.print("Blue: ");
+        // Serial.print(stateRB.blue);
+        // Serial.print(" | ");
+        // Serial.print("Yellow: ");
+        // Serial.print(stateRB.yellow);
+        // Serial.print(" | ");
+        // Serial.print("Black: ");
+        // Serial.print(stateRB.black);
+        // Serial.print(" | ");
+        // Serial.print("Period: ");
+        // Serial.print(stateRB.period);
+        // Serial.print(" | ");
       }
 
       if(Serial.available()){

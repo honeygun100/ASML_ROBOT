@@ -46,12 +46,6 @@ void choose_direction_and_move(){
 }
 
 
-
-
-
-
-
-
 // SOME OF THESE ...max and ...min NEED TO CHANGE DEPENDING ON HOW MOTORS ARE MOUNTED
 void motor_move(){
     if(current_direction == forward){

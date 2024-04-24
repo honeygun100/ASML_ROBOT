@@ -137,8 +137,8 @@ void loop() {
   int task = 1;
   int home_task = 1;
   unsigned long step_delay = 1300;
-  int print_colors = 1;
-  print_gyro_values = 0;
+  int print_colors = 0;
+  print_gyro_values = 1;
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
   
@@ -271,7 +271,7 @@ void loop() {
     // Serial.print(gyro_PID_KI,5);
     // Serial.print(" ");
     // Serial.print(gyro_PID_KD,5);
-    // Serial.println("");
+    //Serial.println("");
   }
 }
 

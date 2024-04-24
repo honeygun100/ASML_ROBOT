@@ -13,7 +13,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "Adafruit_TCS34725.h"
+//#include "Adafruit_TCS34725.h"
 
 #define motor1_pin_servo_lib 3
 #define motor2_pin_servo_lib 5
@@ -118,8 +118,8 @@ extern States stateFL;
 extern States stateRB;
 enum home_options {blue, yellow};
 extern home_options home;
-extern Adafruit_TCS34725 tcs;
-extern uint16_t r, g, b, c, colorTemp, lux;
+//extern Adafruit_TCS34725 tcs;
+//extern uint16_t r, g, b, c, colorTemp, lux;
 
 //Lever variables
 extern Servo lever_servo;
