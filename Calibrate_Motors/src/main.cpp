@@ -98,20 +98,7 @@ void setup() {
   myservo2.writeMicroseconds(micros_p_in);
   myservo3.writeMicroseconds(micros_p_in);
   myservo4.writeMicroseconds(micros_p_in);
-  
 
-  
-  // Try to initialize BNO005!
-  if(!bno.begin()){
-    // There was a problem detecting the BNO055 ... check your connections 
-    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-    while(1);
-  }
-  delay(1000);
-  bno.setExtCrystalUse(true);
-  
-  
-  delay(1050);
 }
 
 
@@ -126,11 +113,7 @@ void setup() {
 
 void loop() {
   int counter = 0;
-  digitalWrite(game_stat_output_pin, HIGH);
-  while(digitalRead(game_start_input_pin) == LOW){
-    ;;
-  }
-  Serial.print("nice, we in here");
+
 
   while(1){
     // Use Serial to test inputs to motors and speeds/calibrate motors
@@ -212,11 +195,11 @@ void loop() {
 
     //motor test code
     // analogWrite(motor1_pin_servo_lib, p_in);
-    myservo1.writeMicroseconds(1500); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
+    myservo1.writeMicroseconds(micros_p_in); // when holding from correct position: left wheel -> 1.628 * 1000 for motor one to move forward coutner-clockwise
                                              //                                                   1.373 * 1000 for motor one to move backward clockwise
-    // myservo2.writeMicroseconds(micros_p_in); // front wheel
-    // myservo3.writeMicroseconds(micros_p_in); // right wheel
-    // myservo4.writeMicroseconds(micros_p_in); // back wheel
+    myservo2.writeMicroseconds(micros_p_in); // front wheel
+    myservo3.writeMicroseconds(micros_p_in); // right wheel
+    myservo4.writeMicroseconds(micros_p_in); // back wheel
   }
 }
 
