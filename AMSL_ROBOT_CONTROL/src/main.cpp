@@ -42,7 +42,7 @@ float gyro_degrees = 0.00; // extern
 float gyro_degrees2 = 0.00; // extern
 float gyro_PID_error = 0.00; // extern
 float gyro_PID_error_prev = 0.00; // extern
-float offset1 = 0.00; // this is to fix the Rz of the coordiante plane, 0.00056700 is old value
+float offset1 = 0.00056700; // this is to fix the Rz of the coordiante plane, 0.00056700 is old value
 float gyro_desired = offset1; // extern
 
 float gyro_PID_P = 0.00; // extern
@@ -170,7 +170,7 @@ void loop() {
   }
   digitalWrite(game_start_output_pin, LOW);
   Serial.println("also we  are here");
-  
+
   //DURING THE 5 SECONDS EMILE NEEDS TO HOLD THE STRING
   release();
 
@@ -197,10 +197,16 @@ void loop() {
   gyro_PID_loop_timer = millis();
   //unsigned long delay_timer = millis();
   unsigned long end_game_timer = millis();
+  unsigned long color_sampler_timer = millis();
   while(1){
     if(millis() - end_game_timer < 45000){
       // Use Serial to test inputs to motors and speeds/calibrate motors
-      getColor();
+      while(millis() - color_sampler_timer >= 50){
+        getColor();
+        color_sampler_timer = millis();
+      }
+      // getColor();
+
       if(print_colors == 1){
         Serial.print("FL:   | ");
         Serial.print("Curr: ");
@@ -332,7 +338,7 @@ void loop() {
         }
 
         
-        if(task == 2){
+        else if(task == 2){
           current_direction = right;
           choose_direction_and_move();
           getColor();
@@ -341,7 +347,7 @@ void loop() {
           }
         }
 
-        if(task == 3){
+        else if(task == 3){
           current_direction = left;
           choose_direction_and_move();
           
@@ -356,7 +362,7 @@ void loop() {
           }
         }
 
-        if(task == 4){
+        else if(task == 4){
           current_direction = backward;
           choose_direction_and_move();
           
@@ -371,7 +377,7 @@ void loop() {
           }
         }
 
-        if(task == 5){
+        else if(task == 5){
           current_direction = left;
           choose_direction_and_move();
           getColor();
@@ -380,7 +386,7 @@ void loop() {
           }
         }
 
-        if(task == 6){
+        else if(task == 6){
           current_direction = right;
           choose_direction_and_move();
           
@@ -396,7 +402,7 @@ void loop() {
         }
 
 
-        if(task == 7){
+        else if(task == 7){
           current_direction = backward;
           choose_direction_and_move();
           
@@ -405,7 +411,7 @@ void loop() {
           }
         }
 
-        if(task == 8){
+        else if(task == 8){
           current_direction = forward;
           choose_direction_and_move();
           
@@ -423,11 +429,9 @@ void loop() {
             }
           }
         }
-      }
 
+      }else{ //start position is on the back right of board, home checks are in the tasks : start_pos == 1
 
-
-      if(start_pos == 1){ //start position is on the back right of board, home checks are in the tasks
         if(task == 1){
           current_direction = forward;
           choose_direction_and_move();
@@ -446,7 +450,7 @@ void loop() {
         }
 
         
-        if(task == 2){
+        else if(task == 2){
           current_direction = left;
           choose_direction_and_move();
           getColor();
@@ -455,7 +459,7 @@ void loop() {
           }
         }
 
-        if(task == 3){
+        else if(task == 3){
           current_direction = right;
           choose_direction_and_move();
           
@@ -470,7 +474,7 @@ void loop() {
           }
         }
 
-        if(task == 4){
+        else if(task == 4){
           current_direction = backward;
           choose_direction_and_move();
           
@@ -485,7 +489,7 @@ void loop() {
           }
         }
 
-        if(task == 5){
+        else if(task == 5){
           current_direction = right;
           choose_direction_and_move();
           getColor();
@@ -494,7 +498,7 @@ void loop() {
           }
         }
 
-        if(task == 6){
+        else if(task == 6){
           current_direction = left;
           choose_direction_and_move();
           
@@ -510,7 +514,7 @@ void loop() {
         }
 
 
-        if(task == 7){
+        else if(task == 7){
           current_direction = backward;
           choose_direction_and_move();
           
@@ -519,7 +523,7 @@ void loop() {
           }
         }
 
-        if(task == 8){
+        else if(task == 8){
           current_direction = forward;
           choose_direction_and_move();
           

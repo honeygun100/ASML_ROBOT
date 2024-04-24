@@ -138,7 +138,7 @@ void loop() {
   int home_task = 1;
   unsigned long step_delay = 1300;
   int print_colors = 0;
-  print_gyro_values = 1;
+  print_gyro_values = 0;
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
   
