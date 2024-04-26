@@ -557,7 +557,7 @@ void loop() {
         }
       
 
-        if(home_task == 2){
+        else if(home_task == 2){
           current_direction = right;
           choose_direction_and_move();
           
@@ -567,7 +567,7 @@ void loop() {
           }
         }
 
-        if(home_task == 3){
+        else if(home_task == 3){
           current_direction = backward;
           choose_direction_and_move();
           
@@ -576,7 +576,7 @@ void loop() {
           }
         }
 
-        if(home_task == 4){
+        else if(home_task == 4){
           current_direction = forward;
           choose_direction_and_move();
           
@@ -607,7 +607,7 @@ void loop() {
         }
       
 
-        if(home_task == 2){
+        else if(home_task == 2){
           current_direction = left;
           choose_direction_and_move();
           
@@ -617,7 +617,7 @@ void loop() {
           }
         }
 
-        if(home_task == 3){
+        else if(home_task == 3){
           current_direction = backward;
           choose_direction_and_move();
           
@@ -626,7 +626,7 @@ void loop() {
           }
         }
 
-        if(home_task == 4){
+        else if(home_task == 4){
           current_direction = forward;
           choose_direction_and_move();
           
