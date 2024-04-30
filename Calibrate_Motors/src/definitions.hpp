@@ -20,11 +20,11 @@
 #define motor4_pin_servo_lib 10
 #define game_start_input_pin 12
 #define game_stat_output_pin 13
-#define up_an_where_pin_input 2
-#define up_and_where_pin_output 7
+#define up_an_where_pin_input 7
+#define up_and_where_pin_output 2
 
-#define sensorFL 8
-#define sensorRB 9
+#define sensorFL 9
+#define sensorRB 8
 
 typedef struct States{
   int curr_low_bound = 0, curr_high_bound = 0, curr = 0, opp = 1, yellow = 0, blue = 0, black = 0, period = 0;

@@ -19,8 +19,8 @@
 #define motor3_pin_servo_lib 6
 #define motor4_pin_servo_lib 10
 
-#define sensorFL 8
-#define sensorRB 9
+#define sensorFL 9
+#define sensorRB 8
 
 typedef struct States{
   int curr_low_bound = 0, curr_high_bound = 0, curr = 0, opp = 1, yellow = 0, blue = 0, black = 0, period = 0;

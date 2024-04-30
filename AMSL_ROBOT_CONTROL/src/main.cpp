@@ -65,11 +65,21 @@ home_options home;
 //COLOR SENSOR
 int curr_low_bound = 0;
 int curr_high_bound = 0;
-int yellowBound[2] = {0, 200};  // 55
-int blueBound[2] = {200, 690};   // 450
-int blackBound[2] = {690, 1200}; // 800
+// int yellowBound_FL[2] = {0, 200};  // 55
+// int blueBound_FL[2] = {200, 650};   // 450
+// int blackBound_FL[2] = {650, 1200}; // 800
+// int yellowBound_RB[2] = {0, 200};  // 9
+// int blueBound_RB[2] = {200, 650};   // 67
+// int blackBound_RB[2] = {650, 1200}; // 121
+int yellowBound_FL[2] = {0, 200};  // 55
+int blueBound_FL[2] = {200, 650};   // 450
+int blackBound_FL[2] = {650, 1200}; // 800
+int yellowBound_RB[2] = {0, 200};  // 9
+int blueBound_RB[2] = {200, 425};   // 67
+int blackBound_RB[2] = {425, 1200}; // 121
 States stateFL;
 States stateRB;
+
 //Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 //uint16_t r, g, b, c, colorTemp, lux;
 
@@ -83,6 +93,7 @@ int lever_action_state= 0;
 
 
 void setup() {
+  stateFL.am_i_left = 1;
   //pinMode(motor1_pin_servo_lib, OUTPUT);
   //analogWrite(motor1_pin_servo_lib, p_in);
 
@@ -151,9 +162,10 @@ void loop() {
   //unsigned long step_delay = 1300;
   int print_colors = 0;
   print_gyro_values = 0;
+  int black_counter = 0;
+  int black_threshold = 20;
 
-
-  getColor();
+  getColor(); // THIS IS TO FIND THE HOME
   if(stateFL.blue == 1){
     home = blue;
   }else{
@@ -163,13 +175,14 @@ void loop() {
   
 
   BNO005_get_standing_error(); //update the gyro_read_offset with in initial sample of gyro reading
-  Serial.println("we are here");
+  // Serial.println("we are here");
   digitalWrite(game_start_output_pin, HIGH); // WAIT FOR PHYSICAL SWITCH TO FLIP
+  delay(100);
   while(digitalRead(game_start_input_pin) == LOW){
     ;;
   }
   digitalWrite(game_start_output_pin, LOW);
-  Serial.println("also we  are here");
+  // Serial.println("also we  are here");
 
   //DURING THE 5 SECONDS EMILE NEEDS TO HOLD THE STRING
   release();
@@ -177,7 +190,9 @@ void loop() {
   
   int start_pos;
   digitalWrite(up_and_where_pin_output, HIGH);
+  delay(100);
   if(digitalRead(up_an_where_pin_input) == LOW){// FLIP SWITCH ACCORDING TO WHICH DIRECTION WE NEED TO MOVE FIRST.
+    // Serial.println("going right");
     start_pos = 0;
     move_direction[4] = '\0';
     move_direction[0] = 'r';
@@ -185,6 +200,7 @@ void loop() {
     move_direction[2] = 'g';
     move_direction[3] = 't';
   }else{
+    // Serial.println("going left");
     start_pos = 1;
     move_direction[4] = '\0';
     move_direction[0] = 'l';
@@ -201,120 +217,120 @@ void loop() {
   while(1){
     if(millis() - end_game_timer < 45000){
       // Use Serial to test inputs to motors and speeds/calibrate motors
-      while(millis() - color_sampler_timer >= 50){
+      while(millis() - color_sampler_timer >= 400){
         getColor();
         color_sampler_timer = millis();
       }
       // getColor();
 
       if(print_colors == 1){
-        Serial.print("FL:   | ");
-        Serial.print("Curr: ");
-        Serial.print(stateFL.curr);
-        Serial.print(" | ");
-        Serial.print("Opp: ");
-        Serial.print(stateFL.opp);
-        Serial.print(" | ");
-        Serial.print("Blue: ");
-        Serial.print(stateFL.blue);
-        Serial.print(" | ");
-        Serial.print("Yellow: ");
-        Serial.print(stateFL.yellow);
-        Serial.print(" | ");
-        Serial.print("Black: ");
-        Serial.print(stateFL.black);
-        Serial.print(" | ");
-        Serial.print("Period: ");
-        Serial.print(stateFL.period);
-        Serial.print(" | ");
-        // Serial.print("------- RB:   | ");
+        // Serial.print("FL:   | ");
         // Serial.print("Curr: ");
-        // Serial.print(stateRB.curr);
+        // Serial.print(stateFL.curr);
         // Serial.print(" | ");
         // Serial.print("Opp: ");
-        // Serial.print(stateRB.opp);
+        // Serial.print(stateFL.opp);
         // Serial.print(" | ");
         // Serial.print("Blue: ");
-        // Serial.print(stateRB.blue);
+        // Serial.print(stateFL.blue);
         // Serial.print(" | ");
         // Serial.print("Yellow: ");
-        // Serial.print(stateRB.yellow);
+        // Serial.print(stateFL.yellow);
         // Serial.print(" | ");
         // Serial.print("Black: ");
-        // Serial.print(stateRB.black);
+        // Serial.print(stateFL.black);
         // Serial.print(" | ");
         // Serial.print("Period: ");
-        // Serial.print(stateRB.period);
-        // Serial.print(" | ");
+        // Serial.println(stateFL.period);
+        Serial.println(" | ");
+        Serial.print("------- RB:   | ");
+        Serial.print("Curr: ");
+        Serial.print(stateRB.curr);
+        Serial.print(" | ");
+        Serial.print("Opp: ");
+        Serial.print(stateRB.opp);
+        Serial.print(" | ");
+        Serial.print("Blue: ");
+        Serial.print(stateRB.blue);
+        Serial.print(" | ");
+        Serial.print("Yellow: ");
+        Serial.print(stateRB.yellow);
+        Serial.print(" | ");
+        Serial.print("Black: ");
+        Serial.print(stateRB.black);
+        Serial.print(" | ");
+        Serial.print("Period: ");
+        Serial.print(stateRB.period);
+        Serial.println(" | ");
       }
 
-      if(Serial.available()){
-        char incomingCharacter = Serial.read();
-        if(incomingCharacter == '1'){ // case one and two are for test code at bottom of void loop()
-          p_in++;
-          micros_p_in++;
-          Serial.print(p_in);
-          Serial.print("  ");
-          Serial.println(micros_p_in);
-        }else if(incomingCharacter == '2'){
-          p_in--;
-          micros_p_in--;
-          Serial.print(p_in);
-          Serial.print("  ");
-          Serial.println(micros_p_in);
-        }else if(incomingCharacter == '3'){
-          gyro_KP_divider += .001;
-          Serial.print("kp_divider is ");
-          Serial.print(gyro_KP_divider,5);
-          gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
-          Serial.print("\tkp is ");
-          Serial.println(gyro_PID_KP,5);
-        }else if(incomingCharacter == '4'){
-          gyro_KP_divider -= .001;
-          Serial.print("kp_divider is ");
-          Serial.print(gyro_KP_divider,5);
-          gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
-          Serial.print("\tkp is ");
-          Serial.println(gyro_PID_KP,5);
-        }else if(incomingCharacter == '5'){
-          gyro_PID_KI += .0001;
-          Serial.print("gyro_PID_KI is ");
-          Serial.println(gyro_PID_KI,5);
-        }else if(incomingCharacter == '6'){
-          gyro_PID_KI -= .0001;
-          Serial.print("gyro_PID_KI is ");
-          Serial.println(gyro_PID_KI,5);
-        }else if(incomingCharacter == '7'){
-          gyro_PID_KD += .5;
-          Serial.print("gyro_PID_KD is ");
-          Serial.println(gyro_PID_KD);
-        }else if(incomingCharacter == '8'){
-          gyro_PID_KD -= .5;
-          Serial.print("gyro_PID_KD is ");
-          Serial.println(gyro_PID_KD);
+      // if(Serial.available()){
+      //   char incomingCharacter = Serial.read();
+      //   if(incomingCharacter == '1'){ // case one and two are for test code at bottom of void loop()
+      //     p_in++;
+      //     micros_p_in++;
+      //     Serial.print(p_in);
+      //     Serial.print("  ");
+      //     Serial.println(micros_p_in);
+      //   }else if(incomingCharacter == '2'){
+      //     p_in--;
+      //     micros_p_in--;
+      //     Serial.print(p_in);
+      //     Serial.print("  ");
+      //     Serial.println(micros_p_in);
+      //   }else if(incomingCharacter == '3'){
+      //     gyro_KP_divider += .001;
+      //     Serial.print("kp_divider is ");
+      //     Serial.print(gyro_KP_divider,5);
+      //     gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
+      //     Serial.print("\tkp is ");
+      //     Serial.println(gyro_PID_KP,5);
+      //   }else if(incomingCharacter == '4'){
+      //     gyro_KP_divider -= .001;
+      //     Serial.print("kp_divider is ");
+      //     Serial.print(gyro_KP_divider,5);
+      //     gyro_PID_KP = whlpair1_micro_p_in_max/gyro_KP_divider; // maybe replace micro_p_in_max with 1
+      //     Serial.print("\tkp is ");
+      //     Serial.println(gyro_PID_KP,5);
+      //   }else if(incomingCharacter == '5'){
+      //     gyro_PID_KI += .0001;
+      //     Serial.print("gyro_PID_KI is ");
+      //     Serial.println(gyro_PID_KI,5);
+      //   }else if(incomingCharacter == '6'){
+      //     gyro_PID_KI -= .0001;
+      //     Serial.print("gyro_PID_KI is ");
+      //     Serial.println(gyro_PID_KI,5);
+      //   }else if(incomingCharacter == '7'){
+      //     gyro_PID_KD += .5;
+      //     Serial.print("gyro_PID_KD is ");
+      //     Serial.println(gyro_PID_KD);
+      //   }else if(incomingCharacter == '8'){
+      //     gyro_PID_KD -= .5;
+      //     Serial.print("gyro_PID_KD is ");
+      //     Serial.println(gyro_PID_KD);
 
-        }else if(incomingCharacter == 'z'){
-          offset1 += .0000010;
-          Serial.print("offset1 is ");
-          Serial.println(offset1);
+      //   }else if(incomingCharacter == 'z'){
+      //     offset1 += .0000010;
+      //     Serial.print("offset1 is ");
+      //     Serial.println(offset1);
 
-        }else if(incomingCharacter == 'x'){
-          offset1 -= .0000010;
-          Serial.print("offset1 is ");
-          Serial.println(offset1);
+      //   }else if(incomingCharacter == 'x'){
+      //     offset1 -= .0000010;
+      //     Serial.print("offset1 is ");
+      //     Serial.println(offset1);
 
-        }else if(incomingCharacter == 'c'){
-          offset2 += .5;
-          Serial.print("offset2 is ");
-          Serial.println(offset2);
+      //   }else if(incomingCharacter == 'c'){
+      //     offset2 += .5;
+      //     Serial.print("offset2 is ");
+      //     Serial.println(offset2);
 
-        }else if(incomingCharacter == 'v'){
-          offset2 -= .5;
-          Serial.print("offset2 is ");
-          Serial.println(offset2);
+      //   }else if(incomingCharacter == 'v'){
+      //     offset2 -= .5;
+      //     Serial.print("offset2 is ");
+      //     Serial.println(offset2);
 
-        }
-      }	
+      //   }
+      // }	
 
 
     
@@ -341,9 +357,16 @@ void loop() {
         else if(task == 2){
           current_direction = right;
           choose_direction_and_move();
-          getColor();
+          // getColor();
           if(stateRB.black == 1){
-            task = 3;
+            if(black_counter == black_threshold){
+              task = 3;
+              black_counter = 0;
+            }else if(stateRB.black != 1){
+              black_counter = 0;
+            }else{
+              black_counter++;
+            }
           }
         }
 
@@ -380,9 +403,16 @@ void loop() {
         else if(task == 5){
           current_direction = left;
           choose_direction_and_move();
-          getColor();
+          // getColor();
           if(stateFL.black == 1){
-            task = 6;
+            if(black_counter == black_threshold){
+              task = 6;
+              black_counter = 0;
+            }else if(stateFL.black != 1){
+              black_counter = 0;
+            }else{
+              black_counter++;
+            }
           }
         }
 
@@ -407,7 +437,14 @@ void loop() {
           choose_direction_and_move();
           
           if(stateRB.black == 1){
-            task = 8;
+            if(black_counter == black_threshold){
+              task = 8;
+              black_counter = 0;
+            }else if(stateRB.black != 1){
+              black_counter = 0;
+            }else{
+              black_counter++;
+            }
           }
         }
 
@@ -430,7 +467,7 @@ void loop() {
           }
         }
 
-      }else{ //start position is on the back right of board, home checks are in the tasks : start_pos == 1
+      }else if(start_pos == 1){ //start position is on the back right of board, home checks are in the tasks : start_pos == 1
 
         if(task == 1){
           current_direction = forward;
@@ -453,9 +490,16 @@ void loop() {
         else if(task == 2){
           current_direction = left;
           choose_direction_and_move();
-          getColor();
+          // getColor();
           if(stateFL.black == 1){
-            task = 3;
+            if(black_counter == black_threshold){
+              task = 3;
+              black_counter = 0;
+            }else if(stateFL.black != 1){
+              black_counter = 0;
+            }else{
+              black_counter++;
+            }
           }
         }
 
@@ -492,9 +536,16 @@ void loop() {
         else if(task == 5){
           current_direction = right;
           choose_direction_and_move();
-          getColor();
+          // getColor();
           if(stateRB.black == 1){
-            task = 6;
+            if(black_counter == black_threshold){
+              task = 6;
+              black_counter = 0;
+            }else if(stateRB.black != 1){
+              black_counter = 0;
+            }else{
+              black_counter++;
+            }
           }
         }
 
@@ -519,7 +570,14 @@ void loop() {
           choose_direction_and_move();
           
           if(stateRB.black == 1){
-            task = 8;
+            if(black_counter == black_threshold){
+              task = 8;
+              black_counter = 0;
+            }else if(stateRB.black != 1){
+              black_counter = 0;
+            }else{
+              black_counter++;
+            }
           }
         }
 
@@ -544,7 +602,10 @@ void loop() {
       }
       
     }else{ // When the game ends, get to the Final side of the board
-      getColor();
+      while(millis() - color_sampler_timer >= 400){
+        getColor();
+        color_sampler_timer = millis();
+      }
       
       if(move_direction[0] == 'r'){
         if(home_task == 1){

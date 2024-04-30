@@ -118,7 +118,7 @@ void setup() {
   gyro_PID_loop_timer = millis();
   
   
-  delay(1050);
+  delay(3000);
 }
 
 

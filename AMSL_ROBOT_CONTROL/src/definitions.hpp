@@ -21,14 +21,14 @@
 #define motor4_pin_servo_lib 10
 #define game_start_input_pin 12
 #define game_start_output_pin 13
-#define up_an_where_pin_input 2
-#define up_and_where_pin_output 7
+#define up_an_where_pin_input 7
+#define up_and_where_pin_output 2
 
-#define sensorFL 8
-#define sensorRB 9
+#define sensorFL 9
+#define sensorRB 8
 
 typedef struct States{
-  int curr_low_bound = 0, curr_high_bound = 0, curr = 0, opp = 1, yellow = 0, blue = 0, black = 0, period = 0;
+  int curr_low_bound = 0, curr_high_bound = 0, curr = 0, opp = 1, yellow = 0, blue = 0, black = 0, period = 0, am_i_left = 0;
 }States;
 
 
@@ -111,9 +111,12 @@ extern float offset2;
 //COLOR SENSOR Variables
 extern int curr_low_bound;
 extern int curr_high_bound;
-extern int yellowBound[2];  // 9
-extern int blueBound[2];   // 67
-extern int blackBound[2]; // 121
+extern int yellowBound_RB[2];  // 9
+extern int blueBound_RB[2];   // 67
+extern int blackBound_RB[2]; // 121
+extern int yellowBound_FL[2];  // 9
+extern int blueBound_FL[2];   // 67
+extern int blackBound_FL[2]; // 121
 extern States stateFL;
 extern States stateRB;
 enum home_options {blue, yellow};
